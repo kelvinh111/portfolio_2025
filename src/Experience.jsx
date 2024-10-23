@@ -1,17 +1,17 @@
-import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import * as THREE from 'three'
-import { useRef } from 'react'
+import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import * as THREE from 'three';
+import { useRef } from 'react';
 
 const objectNames = [
     "book", "chair2", "curtain", "coffee", "window1", "window2", 
     "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor", 
     "desk", "keyboard", "mouse", "plant1", "plant2", "plant3", 
     "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3", "phone"
-]
+];
 
-const glasses = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2']
+const glasses = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
 
 export default function Experience() {
     const normalMap = useTexture("./model/dirt1.png");
@@ -21,32 +21,37 @@ export default function Experience() {
     
     // References for glass, scene, and plane objects
     const sceneRef = useRef();
-    const glassRef = useRef();
+    const glassRefs = useRef([]);
     const planeRef = useRef();
 
     const { nodes } = useGLTF('./model/room19.glb', true, (loader) => {
-        const dracoLoader = new DRACOLoader()
-        dracoLoader.setDecoderPath('draco/')
-        loader.setDRACOLoader(dracoLoader)
-    })
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('draco/');
+        loader.setDRACOLoader(dracoLoader);
+    });
 
-    const textures = {}
+    const textures = {};
     objectNames.forEach((name) => {
-        const texture = useTexture(`./model/${name}.jpg`)
-        texture.flipY = false
-        textures[name] = texture
-    })
+        const texture = useTexture(`./model/${name}.jpg`);
+        texture.flipY = false;
+        textures[name] = texture;
+    });
 
     // Use useFrame to handle rendering order
     useFrame((state) => {
-        // Render the scene (including the plane) into the FBO buffer, but not the glass
+
         planeRef.current.visible = true;
-        glassRef.current.visible = false;  // Hide glass
+        // Hide the glass during the buffer render
+        glassRefs.current.forEach(ref => ref.visible = false);
+        
+        // Render the scene (including the plane) into the FBO buffer
         state.gl.setRenderTarget(buffer);
-        state.gl.render(state.scene, state.camera);  // Render scene and plane into the buffer
+        state.gl.render(state.scene, state.camera);
         state.gl.setRenderTarget(null);
+        
         planeRef.current.visible = false;
-        glassRef.current.visible = true;   // Show glass
+        // Show the glass after the buffer is rendered
+        glassRefs.current.forEach(ref => ref.visible = true);
     });
 
     return (
@@ -70,8 +75,14 @@ export default function Experience() {
             </group>
 
             {/* Glass objects */}
-            {glasses.map((name) => (
-                <mesh key={name} geometry={nodes[name]?.geometry} position={nodes[name]?.position} rotation={nodes[name]?.rotation} ref={glassRef}>
+            {glasses.map((name, index) => (
+                <mesh 
+                    key={name} 
+                    geometry={nodes[name]?.geometry} 
+                    position={nodes[name]?.position} 
+                    rotation={nodes[name]?.rotation} 
+                    ref={ref => (glassRefs.current[index] = ref)} // Store the reference
+                >
                     <MeshTransmissionMaterial
                         transmission={1}
                         roughness={0.1}
@@ -82,7 +93,6 @@ export default function Experience() {
                         buffer={buffer.texture}
                         side={THREE.DoubleSide}
                     />
-                    <mesh renderOrder={1} /> {/* Set higher renderOrder for glass */}
                 </mesh>
             ))}
 
@@ -97,5 +107,5 @@ export default function Experience() {
                 count={50}
             />
         </>
-    )
+    );
 }
