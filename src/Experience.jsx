@@ -1,53 +1,51 @@
-import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial } from '@react-three/drei';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import portalVertexShader from './shaders/portal/vertex.glsl';
-import portalFragmentShader from './shaders/portal/fragment.glsl';
 import * as THREE from 'three';
+import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial } from '@react-three/drei';
+import { useFrame, extend } from '@react-three/fiber';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef } from 'react';
 import { useControls } from 'leva';
-
-const loader = new THREE.TextureLoader();
-const texture0 = loader.load("./4.png");
-texture0.minFilter = THREE.NearestFilter;
-texture0.magFilter = THREE.NearestFilter;
-texture0.wrapS = THREE.RepeatWrapping;
-texture0.wrapT = THREE.RepeatWrapping;
-
-const objectNames = [
-    "book", "chair2", "curtain", "coffee", "window1", "window2",
-    "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor",
-    "desk", "keyboard", "mouse", "plant1", "plant2", "plant3",
-    "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3", "phone"
-];
-
-const glasses = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
-
-const PortalMaterial = shaderMaterial(
-    {
-        iTime: 0,
-        iMouse: new THREE.Vector4(),
-        iResolution: new THREE.Vector3(),
-        iChannel0: texture0,
-        uSunColor: new THREE.Color(),
-        uLightColor: new THREE.Color(),
-        uDarkColor: new THREE.Color(),
-        uBaseSkyColor: new THREE.Color(),
-    },
-    portalVertexShader,
-    portalFragmentShader
-);
-
-extend({ PortalMaterial });
+import portalVertexShader from './shaders/portal/vertex.glsl';
+import portalFragmentShader from './shaders/portal/fragment.glsl';
 
 export default function Experience() {
-    // Leva controls for tweaking colors
+    const objects = [
+        "book", "chair2", "curtain", "coffee", "window1", "window2",
+        "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor",
+        "desk", "keyboard", "mouse", "plant1", "plant2", "plant3",
+        "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3", "phone"
+    ];
+
+    const glasses = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
+
+    // sky texture
+    const textureLoader = new THREE.TextureLoader();
+    const skyTexture = textureLoader.load("./4.png");
+    skyTexture.minFilter = THREE.NearestFilter;
+    skyTexture.magFilter = THREE.NearestFilter;
+    skyTexture.wrapS = THREE.RepeatWrapping;
+    skyTexture.wrapT = THREE.RepeatWrapping;
+
+    const PortalMaterial = shaderMaterial(
+        {
+            uTime: 0,
+            uMouse: new THREE.Vector4(),
+            uChannel0: skyTexture,
+            uSunColor: new THREE.Color(),
+            uLightColor: new THREE.Color(),
+            uDarkColor: new THREE.Color(),
+            uBaseSkyColor: new THREE.Color(),
+        },
+        portalVertexShader,
+        portalFragmentShader
+    );
+
+    extend({ PortalMaterial });
+
     const { sunColor, lightColor, darkColor, baseSkyColor } = useControls({
-        sunColor: { value: '#0013ba' },       // Initial value for sunColor in hex
-        lightColor: { value: '#ffffff' },     // Initial value for lightColor in hex
-        darkColor: { value: '#9e9ef5' },      // Initial value for darkColor in hex
-        baseSkyColor: { value: '#ff8080' },   // Initial value for baseSkyColor in hex
+        sunColor: { value: '#0013ba' },
+        lightColor: { value: '#ffffff' },
+        darkColor: { value: '#9e9ef5' },
+        baseSkyColor: { value: '#ff8080' },
     });
 
     const normalMap = useTexture("./model/dirt1.png");
@@ -66,20 +64,14 @@ export default function Experience() {
         loader.setDRACOLoader(dracoLoader);
     });
 
-    const textures = {};
-    objectNames.forEach((name) => {
+    const objectsTextures = {};
+    objects.forEach((name) => {
         const texture = useTexture(`./model/${name}.jpg`);
         texture.flipY = false;
-        textures[name] = texture;
+        objectsTextures[name] = texture;
     });
 
     useFrame((state, delta) => {
-        const planeGeometry = planeRef.current.geometry;
-        const planeScale = planeRef.current.scale;
-        const planeWidth = planeGeometry.parameters.width * planeScale.x;
-        const planeHeight = planeGeometry.parameters.height * planeScale.y;
-
-        portalMaterial.current.iResolution.set(planeWidth, planeHeight, 1);
         portalMaterial.current.iTime += delta;
 
         planeRef.current.visible = true;
@@ -97,22 +89,27 @@ export default function Experience() {
         <>
             <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
             <group ref={sceneRef}>
-                <mesh rotation={[0, 0, 0]} position={[-1.5, 2.5, -4]} ref={planeRef}>
-                    <planeGeometry args={[4.5, 4]} />
+                {/* Sky */}
+                <mesh rotation={[0, 0, 0]} position={[5, 0, -30]} ref={planeRef}>
+                    <planeGeometry args={[50, 40]} />
                     <portalMaterial
                         ref={portalMaterial}
-                        uSunColor={new THREE.Color(sunColor)}         // Leva controlled color
-                        uLightColor={new THREE.Color(lightColor)}     // Leva controlled color
-                        uDarkColor={new THREE.Color(darkColor)}       // Leva controlled color
-                        uBaseSkyColor={new THREE.Color(baseSkyColor)} // Leva controlled color
+                        uSunColor={new THREE.Color(sunColor)}
+                        uLightColor={new THREE.Color(lightColor)}
+                        uDarkColor={new THREE.Color(darkColor)}
+                        uBaseSkyColor={new THREE.Color(baseSkyColor)}
                     />
                 </mesh>
-                {objectNames.map((name) => (
+
+                {/* Objects */}
+                {objects.map((name) => (
                     <mesh key={name} geometry={nodes[name]?.geometry} position={nodes[name]?.position} rotation={nodes[name]?.rotation}>
-                        <meshBasicMaterial map={textures[name]} />
+                        <meshBasicMaterial map={objectsTextures[name]} />
                     </mesh>
                 ))}
             </group>
+
+            {/* Window glasses */}
             {glasses.map((name, index) => (
                 <mesh
                     key={name}
@@ -122,7 +119,7 @@ export default function Experience() {
                     ref={ref => (glassRefs.current[index] = ref)}
                 >
                     <MeshTransmissionMaterial
-                        transmission={1}
+                        transmission={1.2}
                         roughness={0.01}
                         thickness={0.01}
                         normalMap={normalMap}
@@ -133,7 +130,11 @@ export default function Experience() {
                     />
                 </mesh>
             ))}
+
+            {/* Environment background */}
             <Environment files="./AdobeStock_404915950_Preview.jpeg" />
+
+            {/* Sparkles */}
             <Sparkles size={2} scale={[3, 2, 3]} position={[-2, 1, -2]} speed={0.2} count={50} />
         </>
     );

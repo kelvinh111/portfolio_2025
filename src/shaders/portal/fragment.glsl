@@ -1,26 +1,25 @@
-uniform vec3 iResolution;
-uniform float iTime;
-uniform vec4 iMouse;
-uniform sampler2D iChannel0;
+uniform float uTime;
+uniform vec4 uMouse;
+uniform sampler2D uChannel0;
 
 uniform vec3 uSunColor;
 uniform vec3 uLightColor;
 uniform vec3 uDarkColor;
 uniform vec3 uBaseSkyColor;
 
-varying vec2 vUv;  // Use vUv instead of gl_FragCoord
+varying vec2 vUv;
 
 vec3 gamma(vec3 col, float g) {
     return pow(col, vec3(g));
 }
 
 float noiseLayer(vec2 uv) {
-    float t = (iTime + iMouse.x) / 5.;
+    float t = (uTime + uMouse.x) / 5.;
     uv.y -= t / 60.;
     float e = 0.;
     for(float j = 1.; j < 9.; j++) {
         float timeOffset = t * mod(j, 2.989) * .02 - t * .015;
-        e += 1. - texture(iChannel0, uv * (j * 1.789) + j * 159.45 + timeOffset).r / j;
+        e += 1. - texture(uChannel0, uv * (j * 1.789) + j * 159.45 + timeOffset).r / j;
     }
     e /= 3.5;
     return e;
@@ -52,7 +51,7 @@ vec3 drawSky(vec2 uv, vec2 uvInit) {
 }
 
 void main() {
-    vec2 uvInit = vUv;  // Use vUv from vertex shader instead of gl_FragCoord
+    vec2 uvInit = vUv;
     vec2 uv = uvInit;
     uv.y -= .01;
     uv.y = abs(uv.y);
