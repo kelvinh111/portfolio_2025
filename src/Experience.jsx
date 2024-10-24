@@ -42,13 +42,13 @@ export default function Experience() {
     extend({ PortalMaterial });
 
     const { sunColor, lightColor, darkColor, baseSkyColor } = useControls({
-        sunColor: { value: '#0013ba' },
-        lightColor: { value: '#ffffff' },
-        darkColor: { value: '#9e9ef5' },
-        baseSkyColor: { value: '#ff8080' },
+        sunColor: { value: '#00063e' },
+        lightColor: { value: '#000000' },
+        darkColor: { value: '#6161a3' },
+        baseSkyColor: { value: '#d55959' },
     });
 
-    const normalMap = useTexture("./model/dirt1.png");
+    const normalMap = useTexture("./dirt1.png");
     normalMap.wrapS = normalMap.wrapT = 1000;
 
     const buffer = useFBO();
@@ -58,7 +58,7 @@ export default function Experience() {
     const planeRef = useRef();
     const portalMaterial = useRef();
 
-    const { nodes } = useGLTF('./model/room19.glb', true, (loader) => {
+    const { nodes } = useGLTF('./room19.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
         loader.setDRACOLoader(dracoLoader);
@@ -66,13 +66,13 @@ export default function Experience() {
 
     const objectsTextures = {};
     objects.forEach((name) => {
-        const texture = useTexture(`./model/${name}.jpg`);
+        const texture = useTexture(`./${name}.jpg`);
         texture.flipY = false;
         objectsTextures[name] = texture;
     });
 
     useFrame((state, delta) => {
-        portalMaterial.current.iTime += delta;
+        portalMaterial.current.uTime += delta;
 
         planeRef.current.visible = true;
         glassRefs.current.forEach(ref => ref.visible = false);
@@ -90,7 +90,7 @@ export default function Experience() {
             <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
             <group ref={sceneRef}>
                 {/* Sky */}
-                <mesh rotation={[0, 0, 0]} position={[5, 0, -30]} ref={planeRef}>
+                <mesh rotation={[0, 0, 0]} position={[-5, 11, -30]} ref={planeRef}>
                     <planeGeometry args={[50, 40]} />
                     <portalMaterial
                         ref={portalMaterial}
@@ -119,7 +119,7 @@ export default function Experience() {
                     ref={ref => (glassRefs.current[index] = ref)}
                 >
                     <MeshTransmissionMaterial
-                        transmission={1.2}
+                        transmission={1.5}
                         roughness={0.01}
                         thickness={0.01}
                         normalMap={normalMap}
@@ -132,7 +132,9 @@ export default function Experience() {
             ))}
 
             {/* Environment background */}
+            {/* <Environment files="./white.jpg" /> */}
             <Environment files="./AdobeStock_404915950_Preview.jpeg" />
+            {/* <Environment files="./kloofendal_48d_partly_cloudy_puresky_1k.hdr" /> */}
 
             {/* Sparkles */}
             <Sparkles size={2} scale={[3, 2, 3]} position={[-2, 1, -2]} speed={0.2} count={50} />
