@@ -8,7 +8,7 @@ uniform vec3 uLightColor;
 uniform vec3 uDarkColor;
 uniform vec3 uBaseSkyColor;
 
-varying vec2 vUv;
+varying vec2 vUv;  // Use vUv instead of gl_FragCoord
 
 vec3 gamma(vec3 col, float g) {
     return pow(col, vec3(g));
@@ -52,9 +52,7 @@ vec3 drawSky(vec2 uv, vec2 uvInit) {
 }
 
 void main() {
-    vec2 uvInit = gl_FragCoord.xy / iResolution.xy;
-    uvInit.x -= .5;
-    uvInit.x *= iResolution.x / iResolution.y;
+    vec2 uvInit = vUv;  // Use vUv from vertex shader instead of gl_FragCoord
     vec2 uv = uvInit;
     uv.y -= .01;
     uv.y = abs(uv.y);
