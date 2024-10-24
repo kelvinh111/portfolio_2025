@@ -1,10 +1,23 @@
-import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment } from '@react-three/drei';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial } from '@react-three/drei';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-
+import portalVertexShader from './shaders/portal/vertex.glsl'
+import portalFragmentShader from './shaders/portal/fragment.glsl'
 import * as THREE from 'three';
 import { useRef } from 'react';
+
+const PortalMaterial = shaderMaterial(
+    {
+        uTime: 0,
+        uColorStart: new THREE.Color('#ffffff'),
+        uColorEnd: new THREE.Color('#000000')
+    },
+    portalVertexShader,
+    portalFragmentShader
+)
+
+extend({ PortalMaterial })
 
 const objectNames = [
     "book", "chair2", "curtain", "coffee", "window1", "window2", 
@@ -25,6 +38,7 @@ export default function Experience() {
     const sceneRef = useRef();
     const glassRefs = useRef([]);
     const planeRef = useRef();
+    const portalMaterial = useRef()
 
     const { nodes } = useGLTF('./model/room19.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
@@ -40,7 +54,8 @@ export default function Experience() {
     });
 
     // Use useFrame to handle rendering order
-    useFrame((state) => {
+    useFrame((state, delta) => {
+        portalMaterial.current.uTime += delta
 
         planeRef.current.visible = true;
         // Hide the glass during the buffer render
@@ -65,7 +80,8 @@ export default function Experience() {
                 {/* Add the plane (which should be visible through the glass) */}
                 <mesh rotation={[0, 0, 0]} position={[0, 1, -5]} ref={planeRef}>
                     <planeGeometry args={[10, 10]} /> {/* Width, height */}
-                    <meshStandardMaterial color="#5500cc" />
+                    {/* <meshStandardMaterial color="#5500cc" /> */}
+                    <portalMaterial ref={ portalMaterial } />
                 </mesh>
 
                 {/* Non-glass objects */}
@@ -93,20 +109,21 @@ export default function Experience() {
                         normalScale={[0.4, 0.4]}
                         color={"#ffffff"}
                         buffer={buffer.texture}
-                        side={THREE.DoubleSide}
+                        side={THREE.BackSide}
                     />
                 </mesh>
             ))}
 
             {/* Render the environment (so it's behind everything else) */}
             {/* <Environment preset="city" /> */}
-            <Environment files="./kloofendal_48d_partly_cloudy_puresky_1k.hdr" />
+            <Environment files="./AdobeStock_404915950_Preview.jpeg" />
             {/* <Environment background near={1} far={1000} resolution={256}>
                 <mesh scale={100}>
                     <sphereGeometry args={[1, 64, 64]} />
                     <meshBasicMaterial map={envMap} side={THREE.BackSide} />
                 </mesh>
             </Environment> */}
+
 
             <Sparkles
                 size={2}
