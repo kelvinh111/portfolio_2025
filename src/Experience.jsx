@@ -119,37 +119,36 @@ export default function Experience() {
                     position={nodes[name]?.position}
                     rotation={nodes[name]?.rotation}
                     ref={ref => (glassRefs.current[index] = ref)}
+                     renderOrder={1}
                 >
                     <MeshTransmissionMaterial
                         transmission={1.0}
-                        roughness={0.1}
-                        thickness={0.01}
+                        roughness={0}
+                        thickness={0}
                         normalMap={normalMap}
                         normalScale={[0.4, 0.4]}
                         color={"#ffffff"}
                         buffer={buffer.texture}
                         side={THREE.BackSide}
                         transparent={true}
-                        depthWrite={false}
+                        depthWrite={true}
                     />
                 </mesh>
             ))}
 
             {/* Environment background */}
-            <Environment files="./AdobeStock_404915950_Preview.jpeg" />
+            <Environment files="./env2.jpg" />
 
             {/* Sparkles */}
             <Sparkles 
-                size={2} 
-                scale={[3, 2, 3]} 
-                position={[-2, 1, -2]} 
+                size={1.2} 
+                scale={[3, 2, 1.6]} 
+                position={[-2.2, 1, -2.8]} 
                 speed={0.2} 
-                count={50} 
+                count={60} 
                 color={"#ffffff"} 
-                transparent={true} 
-                depthWrite={false} 
-                blending={THREE.NormalBlending  } 
-                renderOrder={10} 
+                opacity={0.3}
+                 renderOrder={0}
             />
 
         </>
