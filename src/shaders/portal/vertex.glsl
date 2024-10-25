@@ -1,3 +1,6 @@
+precision highp float; // High precision for floats
+precision highp int;   // High precision for integers
+
 varying vec2 vUv;
 
 void main()

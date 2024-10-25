@@ -41,11 +41,13 @@ export default function Experience() {
 
     extend({ PortalMaterial });
 
-    const { sunColor, lightColor, darkColor, baseSkyColor } = useControls({
-        sunColor: { value: '#00063e' },
-        lightColor: { value: '#000000' },
-        darkColor: { value: '#6161a3' },
-        baseSkyColor: { value: '#d55959' },
+    const { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
+        sunColor: { value: '#d58a5d' },
+        lightColor: { value: '#ffffff' },
+        darkColor: { value: '#11119a' },
+        baseSkyColor: { value: '#0017e8' },
+        planePosition: { value: [-9, 36, -106], step: 0.1 },
+        planeSize: { value: [180, 120], step: 0.5 },
     });
 
     const normalMap = useTexture("./dirt1.png");
@@ -90,8 +92,8 @@ export default function Experience() {
             <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
             <group ref={sceneRef}>
                 {/* Sky */}
-                <mesh rotation={[0, 0, 0]} position={[-5, 11, -30]} ref={planeRef}>
-                    <planeGeometry args={[50, 40]} />
+                <mesh rotation={[0, 0, 0]} position={planePosition} ref={planeRef}>
+                    <planeGeometry args={planeSize} />
                     <portalMaterial
                         ref={portalMaterial}
                         uSunColor={new THREE.Color(sunColor)}
@@ -119,25 +121,37 @@ export default function Experience() {
                     ref={ref => (glassRefs.current[index] = ref)}
                 >
                     <MeshTransmissionMaterial
-                        transmission={1.5}
-                        roughness={0.01}
+                        transmission={1.0}
+                        roughness={0.1}
                         thickness={0.01}
                         normalMap={normalMap}
                         normalScale={[0.4, 0.4]}
                         color={"#ffffff"}
                         buffer={buffer.texture}
                         side={THREE.BackSide}
+                        transparent={true}
+                        depthWrite={false}
                     />
                 </mesh>
             ))}
 
             {/* Environment background */}
-            {/* <Environment files="./white.jpg" /> */}
             <Environment files="./AdobeStock_404915950_Preview.jpeg" />
-            {/* <Environment files="./kloofendal_48d_partly_cloudy_puresky_1k.hdr" /> */}
 
             {/* Sparkles */}
-            <Sparkles size={2} scale={[3, 2, 3]} position={[-2, 1, -2]} speed={0.2} count={50} />
+            <Sparkles 
+                size={2} 
+                scale={[3, 2, 3]} 
+                position={[-2, 1, -2]} 
+                speed={0.2} 
+                count={50} 
+                color={"#ffffff"} 
+                transparent={true} 
+                depthWrite={false} 
+                blending={THREE.NormalBlending  } 
+                renderOrder={10} 
+            />
+
         </>
     );
 }

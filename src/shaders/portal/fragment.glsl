@@ -1,3 +1,6 @@
+precision highp float; // High precision for floats
+precision highp int;   // High precision for integers
+
 uniform float uTime;
 uniform vec4 uMouse;
 uniform sampler2D uChannel0;
