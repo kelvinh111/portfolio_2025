@@ -87,7 +87,7 @@ export default function Experience() {
     const directionalLightRef = useRef();
 
     // State to manage light and material
-    const [isLightOn, setIsLightOn] = useState(false);
+    const [isLightOff, setIsLightOff] = useState(false);
     const [isPhongMaterial, setIsPhongMaterial] = useState(false);
 
     // State for hover effect
@@ -95,7 +95,7 @@ export default function Experience() {
 
     // Click handler for the desk lamp
     const handleDeskLampClick = () => {
-        setIsLightOn(prev => !prev);
+        setIsLightOff(prev => !prev);
         setIsPhongMaterial(prev => !prev);
     };
 
@@ -116,7 +116,7 @@ export default function Experience() {
                 </mesh>
 
                 {/* Directional Light */}
-                {isLightOn && (
+                {isLightOff && (
                     <directionalLight
                         ref={directionalLightRef}
                         position={[10, 20, 15]} // Position to simulate sunlight angle
