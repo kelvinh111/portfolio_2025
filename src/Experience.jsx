@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial } from '@react-three/drei';
+import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
 import { useFrame, extend } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
@@ -57,7 +57,7 @@ export default function Experience() {
     const planeRef = useRef();
     const portalMaterial = useRef();
 
-    const { nodes } = useGLTF('./room19.glb', true, (loader) => {
+    const { nodes } = useGLTF('./room20.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
         loader.setDRACOLoader(dracoLoader);
@@ -138,6 +138,7 @@ export default function Experience() {
                             geometry={nodes[name]?.geometry}
                             position={nodes[name]?.position}
                             rotation={nodes[name]?.rotation}
+                            scale={nodes[name]?.scale}
                             onClick={name === "desk_lamp" ? handleDeskLampClick : undefined}
                             onPointerOver={() => {
                                 if (name === "desk_lamp") {
@@ -153,14 +154,33 @@ export default function Experience() {
                             }}
                         >
                             {material}
+
                             {/* Hover tint overlay */}
                             {name === "desk_lamp" && isHovered && (
                                 <meshBasicMaterial color="#cc99ff" transparent opacity={0.8} />
                             )}
+
                         </mesh>
                     );
                 })}
             </group>
+
+            <Html
+                transform
+                position-x={nodes["computer_screen"]?.position.x + 0.017}
+                position-y={nodes["computer_screen"]?.position.y - 0.095}
+                position-z={nodes["computer_screen"]?.position.z}
+                rotation={nodes["computer_screen"]?.rotation}
+                scale-x={nodes["computer_screen"]?.scale.x}
+                scale-y={nodes["computer_screen"]?.scale.y - 0.1}
+                scale-z={nodes["computer_screen"]?.scale.z}
+                zIndexRange={[100, 0]} // Ensures it renders on top
+                distanceFactor={1.1}
+                wrapperClass="computer-screen"
+            >
+                <iframe src="https://bruno-simon.com/html/" style={{ border: "none", width: "100%", height: "100%" }} />
+            </Html>
+
 
             {/* Window glasses */}
             {glasses.map((name, index) => (

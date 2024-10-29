@@ -9,3 +9,8 @@ body,
     height: 100%;
     background: ivory;
 }
+
+.computer-screen iframe {
+    width: 1024px;
+    height: 670px;
+}
