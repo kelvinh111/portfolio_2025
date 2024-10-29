@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial } from '@react-three/drei';
 import { useFrame, extend } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useControls } from 'leva';
 import portalVertexShader from './shaders/portal/vertex.glsl';
 import portalFragmentShader from './shaders/portal/fragment.glsl';
@@ -17,7 +17,7 @@ export default function Experience() {
 
     const glasses = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
 
-    // sky texture
+    // Sky texture
     const textureLoader = new THREE.TextureLoader();
     const skyTexture = textureLoader.load("./4.png");
     skyTexture.minFilter = THREE.NearestFilter;
@@ -87,6 +87,18 @@ export default function Experience() {
         glassRefs.current.forEach(ref => ref.visible = true);
     });
 
+    const directionalLightRef = useRef();
+
+    // State to manage light and material
+    const [isLightOn, setIsLightOn] = useState(true);
+    const [isPhongMaterial, setIsPhongMaterial] = useState(true);
+
+    // Click handler for the desk lamp
+    const handleDeskLampClick = () => {
+        setIsLightOn(prev => !prev);
+        setIsPhongMaterial(prev => !prev);
+    };
+
     return (
         <>
             <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
@@ -103,12 +115,35 @@ export default function Experience() {
                     />
                 </mesh>
 
+                {/* Directional Light */}
+                {isLightOn && (
+                    <directionalLight
+                        ref={directionalLightRef}
+                        position={[10, 20, 15]} // Position to simulate sunlight angle
+                        intensity={1.5} // Adjust brightness
+                        color={sunColor}
+                        castShadow // Enable shadows
+                    />
+                )}
+
                 {/* Objects */}
-                {objects.map((name) => (
-                    <mesh key={name} geometry={nodes[name]?.geometry} position={nodes[name]?.position} rotation={nodes[name]?.rotation}>
-                        <meshBasicMaterial map={objectsTextures[name]} />
-                    </mesh>
-                ))}
+                {objects.map((name) => {
+                    const material = (isPhongMaterial
+                        ? <meshPhongMaterial map={objectsTextures[name]} />
+                        : <meshBasicMaterial map={objectsTextures[name]} />)
+
+                    return (
+                        <mesh
+                            key={name}
+                            geometry={nodes[name]?.geometry}
+                            position={nodes[name]?.position}
+                            rotation={nodes[name]?.rotation}
+                            onClick={name === "desk_lamp" ? handleDeskLampClick : undefined} // Add click handler only for desk_lamp
+                        >
+                            {material}
+                        </mesh>
+                    );
+                })}
             </group>
 
             {/* Window glasses */}
@@ -119,10 +154,10 @@ export default function Experience() {
                     position={nodes[name]?.position}
                     rotation={nodes[name]?.rotation}
                     ref={ref => (glassRefs.current[index] = ref)}
-                     renderOrder={1}
+                    renderOrder={1}
                 >
                     <MeshTransmissionMaterial
-                        transmission={1.0}
+                        transmission={1.2}
                         roughness={0}
                         thickness={0}
                         normalMap={normalMap}
@@ -137,20 +172,19 @@ export default function Experience() {
             ))}
 
             {/* Environment background */}
-            <Environment files="./env2.jpg" />
+            <Environment files="./env3.jpg" />
 
             {/* Sparkles */}
-            <Sparkles 
-                size={1.2} 
-                scale={[3, 2, 1.6]} 
-                position={[-2.2, 1, -2.8]} 
-                speed={0.2} 
-                count={60} 
-                color={"#ffffff"} 
+            <Sparkles
+                size={1.2}
+                scale={[3, 2, 1.6]}
+                position={[-2.2, 1, -2.8]}
+                speed={0.2}
+                count={60}
+                color={"#ffffff"}
                 opacity={0.3}
-                 renderOrder={0}
+                renderOrder={0}
             />
-
         </>
     );
 }
