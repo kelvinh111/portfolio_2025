@@ -87,16 +87,12 @@ export default function Experience() {
     const directionalLightRef = useRef();
 
     // State to manage light and material
-    const [isLightOff, setIsLightOff] = useState(false);
-    const [isPhongMaterial, setIsPhongMaterial] = useState(false);
-
-    // State for hover effect
     const [isHovered, setIsHovered] = useState(false);
+    const [isLightOff, setIsLightOff] = useState(false);
 
     // Click handler for the desk lamp
     const handleDeskLampClick = () => {
         setIsLightOff(prev => !prev);
-        setIsPhongMaterial(prev => !prev);
     };
 
     return (
@@ -121,16 +117,24 @@ export default function Experience() {
                         ref={directionalLightRef}
                         position={[10, 20, 15]} // Position to simulate sunlight angle
                         intensity={1.5} // Adjust brightness
-                        color={sunColor}
+                        // color={sunColor}
+                        color={'red'}
                         castShadow // Enable shadows
                     />
                 )}
 
                 {/* Objects */}
                 {objects.map((name) => {
-                    const material = isPhongMaterial
-                        ? <meshPhongMaterial map={objectsTextures[name]} />
-                        : <meshBasicMaterial map={objectsTextures[name]} />;
+                    const isLamp = name === 'desk_lamp'
+                    let material;
+
+                    if (isLamp && isHovered) {
+                        material = <meshBasicMaterial color="#cc99ff" transparent opacity={0.8} />;
+                    } else if (isLightOff) {
+                        material = <meshPhongMaterial map={objectsTextures[name]} />;
+                    } else {
+                        material = <meshBasicMaterial map={objectsTextures[name]} />;
+                    }
 
                     return (
                         <mesh
@@ -153,13 +157,7 @@ export default function Experience() {
                                 }
                             }}
                         >
-                            {material}
-
-                            {/* Hover tint overlay */}
-                            {name === "desk_lamp" && isHovered && (
-                                <meshBasicMaterial color="#cc99ff" transparent opacity={0.8} />
-                            )}
-
+                            { material }
                         </mesh>
                     );
                 })}
@@ -174,11 +172,11 @@ export default function Experience() {
                 scale-x={nodes["computer_screen"]?.scale.x}
                 scale-y={nodes["computer_screen"]?.scale.y - 0.1}
                 scale-z={nodes["computer_screen"]?.scale.z}
-                zIndexRange={[100, 0]} // Ensures it renders on top
-                distanceFactor={1.1}
+                // zIndexRange={[100, 0]} // Ensures it renders on top
+                distanceFactor={0.56}
                 wrapperClass="computer-screen"
             >
-                <iframe src="https://bruno-simon.com/html/" style={{ border: "none", width: "100%", height: "100%" }} />
+                <iframe src="https://onepagelove.com/" style={{ border: "none" }} />
             </Html>
 
 
