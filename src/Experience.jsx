@@ -40,12 +40,12 @@ export default function Experience() {
     extend({ SkyMaterial });
 
     const { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
-        sunColor: { value: '#d58a5d' },
+        sunColor: { value: '#d65e8b' },
         lightColor: { value: '#ffffff' },
         darkColor: { value: '#11119a' },
         baseSkyColor: { value: '#0017e8' },
-        planePosition: { value: [-9, 36, -106], step: 0.1 },
-        planeSize: { value: [180, 120], step: 0.5 },
+        planePosition: { value: [35, 65, -300], step: 0.1 },
+        planeSize: { value: [400, 260], step: 0.5 },
     });
 
     const windowNormalMap = useTexture("./dirt1.png");
@@ -88,7 +88,7 @@ export default function Experience() {
 
     // State to manage desk lamp light
     const [isHovered, setIsHovered] = useState(false);
-    const [isLightOff, setIsLightOff] = useState(false);
+    const [isLightOff, setIsLightOff] = useState(true);
 
     // Click handler for the desk lamp
     const handleDeskLampClick = () => {
@@ -117,7 +117,8 @@ export default function Experience() {
                         ref={directionalLightRef}
                         position={[10, 20, 15]}
                         intensity={1.5}
-                        color={baseSkyColor}
+                        // color={baseSkyColor}
+                        color={ '#7461d3' }
                         castShadow
                     />
                 )}
@@ -161,6 +162,7 @@ export default function Experience() {
                     );
                 })}
 
+                {/* Computer screen */}
                 <Html
                     transform
                     position-x={nodes["computer_screen"]?.position.x + 0.017}
@@ -174,8 +176,17 @@ export default function Experience() {
                     distanceFactor={0.56}
                     wrapperClass="computer-screen"
                 >
-                    <iframe src="https://onepagelove.com/" style={{ border: "none" }} />
+                    <iframe src="https://abstract.jp/flyer/" style={{ border: "none" }} />
                 </Html>
+
+                <rectAreaLight
+                    width={ 2.5 }
+                    height={ 1.65 }
+                    intensity={ 65 }
+                    color={ '#ff6900' }
+                    rotation={ [ - 0.1, Math.PI, 0 ] }
+                    position={ [ 0, 0.55, - 1.15 ] }
+                />
 
                 {/* Windows */}
                 {windows.map((name, index) => (
@@ -188,7 +199,7 @@ export default function Experience() {
                         renderOrder={1}
                     >
                         <MeshTransmissionMaterial
-                            transmission={1.2}
+                            transmission={1.0}
                             roughness={0}
                             thickness={0}
                             normalMap={windowNormalMap}
