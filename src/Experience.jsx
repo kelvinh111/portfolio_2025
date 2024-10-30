@@ -6,6 +6,9 @@ import { useRef, useState } from 'react';
 import { useControls } from 'leva';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
+
+RectAreaLightUniformsLib.init();
 
 export default function Experience() {
     const objects = [
@@ -18,7 +21,7 @@ export default function Experience() {
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
 
     // Sky texture
-    const skyTexture = useTexture('./4.png');
+    const skyTexture = useTexture('./sky.png');
     skyTexture.minFilter = THREE.NearestFilter;
     skyTexture.magFilter = THREE.NearestFilter;
     skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
@@ -42,13 +45,13 @@ export default function Experience() {
     const { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
         sunColor: { value: '#d65e8b' },
         lightColor: { value: '#ffffff' },
-        darkColor: { value: '#11119a' },
-        baseSkyColor: { value: '#0017e8' },
+        darkColor: { value: '#1e1e7c' },
+        baseSkyColor: { value: '#151c5c' },
         planePosition: { value: [35, 65, -300], step: 0.1 },
         planeSize: { value: [400, 260], step: 0.5 },
     });
 
-    const windowNormalMap = useTexture("./dirt1.png");
+    const windowNormalMap = useTexture("./window_normal.png");
     windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
 
     const buffer = useFBO();
@@ -95,6 +98,10 @@ export default function Experience() {
         setIsLightOff(prev => !prev);
     };
 
+    const iframePosition = nodes["computer_screen"]?.position;
+    const iframeRotation = nodes["computer_screen"]?.rotation;
+    const iframeScale = nodes["computer_screen"]?.scale;
+
     return (
         <>
             <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
@@ -117,9 +124,7 @@ export default function Experience() {
                         ref={directionalLightRef}
                         position={[10, 20, 15]}
                         intensity={1.5}
-                        // color={baseSkyColor}
-                        color={ '#7461d3' }
-                        castShadow
+                        color={'#7461d3'}
                     />
                 )}
 
@@ -129,7 +134,7 @@ export default function Experience() {
                     let material;
 
                     if (isLamp && isHovered) {
-                        material = <meshBasicMaterial color="#cc99ff" transparent opacity={0.8} />;
+                        material = <meshBasicMaterial color="#cc99ff" transparent opacity={0.6} />;
                     } else if (isLightOff) {
                         material = <meshPhongMaterial map={objectsTextures[name]} />;
                     } else {
@@ -165,28 +170,18 @@ export default function Experience() {
                 {/* Computer screen */}
                 <Html
                     transform
-                    position-x={nodes["computer_screen"]?.position.x + 0.017}
-                    position-y={nodes["computer_screen"]?.position.y - 0.095}
-                    position-z={nodes["computer_screen"]?.position.z}
-                    rotation={nodes["computer_screen"]?.rotation}
-                    scale-x={nodes["computer_screen"]?.scale.x}
-                    scale-y={nodes["computer_screen"]?.scale.y - 0.1}
-                    scale-z={nodes["computer_screen"]?.scale.z}
-                    // zIndexRange={[100, 0]} // Ensures it renders on top
+                    position-x={iframePosition.x + 0.017}
+                    position-y={iframePosition.y - 0.095}
+                    position-z={iframePosition.z}
+                    rotation={iframeRotation}
+                    scale-x={iframeScale.x}
+                    scale-y={iframeScale.y - 0.1}
+                    scale-z={iframeScale.z}
                     distanceFactor={0.56}
                     wrapperClass="computer-screen"
                 >
-                    <iframe src="https://abstract.jp/flyer/" style={{ border: "none" }} />
+                    <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
                 </Html>
-
-                <rectAreaLight
-                    width={ 2.5 }
-                    height={ 1.65 }
-                    intensity={ 65 }
-                    color={ '#ff6900' }
-                    rotation={ [ - 0.1, Math.PI, 0 ] }
-                    position={ [ 0, 0.55, - 1.15 ] }
-                />
 
                 {/* Windows */}
                 {windows.map((name, index) => (
@@ -214,7 +209,7 @@ export default function Experience() {
                 ))}
 
                 {/* Environment background */}
-                <Environment files="./env3.jpg" />
+                <Environment files="./env.jpg" />
 
                 {/* Sparkles */}
                 <Sparkles
@@ -222,7 +217,7 @@ export default function Experience() {
                     scale={[3, 2, 1.6]}
                     position={[-2.4, 1.6, -2.2]}
                     speed={0.2}
-                    count={60}
+                    count={80}
                     color={"#ffffff"}
                     opacity={0.3}
                     renderOrder={0}
