@@ -6,9 +6,6 @@ import { useRef, useState } from 'react';
 import { useControls } from 'leva';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
-
-RectAreaLightUniformsLib.init();
 
 export default function Experience() {
     const objects = [
@@ -59,8 +56,9 @@ export default function Experience() {
     const glassRefs = useRef([]);
     const planeRef = useRef();
     const skyMaterial = useRef();
+    const pointLightRef = useRef();
 
-    const { nodes } = useGLTF('./room20.glb', true, (loader) => {
+    const { nodes } = useGLTF('./room21.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
         loader.setDRACOLoader(dracoLoader);
@@ -98,9 +96,13 @@ export default function Experience() {
         setIsLightOff(prev => !prev);
     };
 
-    const iframePosition = nodes["computer_screen"]?.position;
-    const iframeRotation = nodes["computer_screen"]?.rotation;
-    const iframeScale = nodes["computer_screen"]?.scale;
+    const computerScreenPosition = nodes["computer_screen"]?.position;
+    const computerScreenRotation = nodes["computer_screen"]?.rotation;
+    const computerScreenScale = nodes["computer_screen"]?.scale;
+
+    const phoneScreenPosition = nodes["phone_screen"]?.position;
+    const phoneScreenRotation = nodes["phone_screen"]?.rotation;
+    const phoneScreenScale = nodes["phone_screen"]?.scale;
 
     return (
         <>
@@ -120,12 +122,22 @@ export default function Experience() {
 
                 {/* Directional Light */}
                 {isLightOff && (
-                    <directionalLight
-                        ref={directionalLightRef}
-                        position={[10, 20, 15]}
-                        intensity={1.5}
-                        color={'#7461d3'}
-                    />
+                    <>
+                        <directionalLight
+                            ref={directionalLightRef}
+                            position={[10, 20, 15]}
+                            intensity={1.5}
+                            color={'#7461d3'}
+                        />
+                        <pointLight
+                            ref={pointLightRef}
+                            position={[computerScreenPosition?.x + 0.4, computerScreenPosition?.y, computerScreenPosition?.z]}
+                            intensity={0.3}
+                            distance={1} // Adjust distance to control light fall-off
+                            decay={2} // Adjust decay to control how quickly the light dims
+                            color={"#ffffff"} // Adjust the color if needed
+                        />
+                    </>
                 )}
 
                 {/* Objects */}
@@ -163,6 +175,15 @@ export default function Experience() {
                             }}
                         >
                             {material}
+                            {isLamp && (
+                                <Html
+                                    position={[0, 0, 0]} // Adjust the position to make sure it is above the lamp
+                                    distanceFactor={8} // Controls how the Html scales based on camera distance
+                                    wrapperClass="desk-lamp-label"
+                                >
+                                    Turn on the light
+                                </Html>
+                            )}
                         </mesh>
                     );
                 })}
@@ -170,15 +191,33 @@ export default function Experience() {
                 {/* Computer screen */}
                 <Html
                     transform
-                    position-x={iframePosition.x + 0.017}
-                    position-y={iframePosition.y - 0.095}
-                    position-z={iframePosition.z}
-                    rotation={iframeRotation}
-                    scale-x={iframeScale.x}
-                    scale-y={iframeScale.y - 0.1}
-                    scale-z={iframeScale.z}
+                    position-x={computerScreenPosition.x + 0.017}
+                    position-y={computerScreenPosition.y - 0.095}
+                    position-z={computerScreenPosition.z}
+                    rotation={computerScreenRotation}
+                    scale-x={computerScreenScale.x}
+                    scale-y={computerScreenScale.y - 0.1}
+                    scale-z={computerScreenScale.z}
                     distanceFactor={0.56}
                     wrapperClass="computer-screen"
+                >
+                    <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
+                </Html>
+
+                {/* Phone screen */}
+                <Html
+                    transform
+                    position-x={phoneScreenPosition.x + 0.035}
+                    position-y={phoneScreenPosition.y + 0.007}
+                    position-z={phoneScreenPosition.z - 0.008}
+                    rotation-x={phoneScreenRotation.x}
+                    rotation-y={phoneScreenRotation.y}
+                    rotation-z={phoneScreenRotation.z + 2.58}
+                    scale-x={phoneScreenScale.x}
+                    scale-y={phoneScreenScale.y}
+                    scale-z={phoneScreenScale.z}
+                    distanceFactor={0.11}
+                    wrapperClass="phone-screen"
                 >
                     <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
                 </Html>

@@ -14,3 +14,18 @@ body,
     width: 600px;
     height: 300px;
 }
+
+.phone-screen iframe {
+    width: 315px;
+    height: 560px;
+}
+
+.desk-lamp-label {
+    div {
+        color: white;
+        font: 8px/12px normal Sans-serif;
+        transform: translate(0, -60px) !important;
+        text-align: center;
+        width: 100px;
+    }
+}
