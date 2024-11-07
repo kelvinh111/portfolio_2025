@@ -88,7 +88,7 @@ export default function Experience() {
     const directionalLightRef = useRef();
 
     // State to manage desk lamp light
-    const [isHovered, setIsHovered] = useState(false);
+    const [isDeskLampHovered, setIsDeskLampHovered] = useState(false);
     const [islampLabelConfirmed, setIslampLabelConfirmed] = useState(false);
     const [isLightOff, setIsLightOff] = useState(true);
 
@@ -143,7 +143,7 @@ export default function Experience() {
                     const isLamp = name === 'desk_lamp'
                     let material;
 
-                    if (isLamp && isHovered) {
+                    if (isLamp && isDeskLampHovered) {
                         material = <meshBasicMaterial color="#cc99ff" transparent opacity={0.6} />;
                     } else if (isLightOff) {
                         material = <meshPhongMaterial map={objectsTextures[name]} />;
@@ -161,13 +161,13 @@ export default function Experience() {
                             onClick={isLamp ? handleDeskLampClick : undefined}
                             onPointerOver={() => {
                                 if (isLamp) {
-                                    setIsHovered(true);
+                                    setIsDeskLampHovered(true);
                                     document.body.style.cursor = "pointer";
                                 }
                             }}
                             onPointerOut={() => {
                                 if (isLamp) {
-                                    setIsHovered(false);
+                                    setIsDeskLampHovered(false);
                                     document.body.style.cursor = "auto";
                                 }
                             }}
@@ -176,7 +176,7 @@ export default function Experience() {
                             {/* Desk Lamp light hint label */}
                             {isLamp &&  (
                                 <Html
-                                    position={[0, 0, 0]}
+                                    position={[0.2, 0, 1]}
                                     distanceFactor={3}
                                 >
                                     <span
