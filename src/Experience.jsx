@@ -131,9 +131,9 @@ export default function Experience() {
                             ref={pointLightRef}
                             position={[computerScreenPosition?.x + 0.4, computerScreenPosition?.y, computerScreenPosition?.z]}
                             intensity={0.3}
-                            distance={1} // Adjust distance to control light fall-off
-                            decay={2} // Adjust decay to control how quickly the light dims
-                            color={"#ffffff"} // Adjust the color if needed
+                            distance={1}
+                            decay={2}
+                            color={"#ffffff"}
                         />
                     </>
                 )}
@@ -158,30 +158,30 @@ export default function Experience() {
                             position={nodes[name]?.position}
                             rotation={nodes[name]?.rotation}
                             scale={nodes[name]?.scale}
-                            onClick={name === "desk_lamp" ? handleDeskLampClick : undefined}
+                            onClick={isLamp ? handleDeskLampClick : undefined}
                             onPointerOver={() => {
-                                if (name === "desk_lamp") {
+                                if (isLamp) {
                                     setIsHovered(true);
                                     document.body.style.cursor = "pointer";
                                 }
                             }}
                             onPointerOut={() => {
-                                if (name === "desk_lamp") {
+                                if (isLamp) {
                                     setIsHovered(false);
                                     document.body.style.cursor = "auto";
                                 }
                             }}
                         >
                             {material}
-                            {isLamp && (
+                            {/* Desk Lamp light hint label */}
+                            {isLamp &&  (
                                 <Html
-                                    position={[0, 0, 0]} // Adjust the position to make sure it is above the lamp
-                                    distanceFactor={3} // Controls how the Html scales based on camera distance
-                                    wrapperClass="desk-lamp-label"
+                                    position={[0, 0, 0]}
+                                    distanceFactor={3}
                                 >
                                     <span
                                         onClick={handleDeskLampClick}
-                                        className={`${islampLabelConfirmed ? 'hidden' : ''}`}
+                                        className={`desk-lamp-label ${islampLabelConfirmed ? 'hidden' : ''}`}
                                     >
                                         Turn on the light
                                     </span>

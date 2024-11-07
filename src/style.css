@@ -20,30 +20,28 @@ body,
 }
 
 .desk-lamp-label {
-    span {
-        display: block;
-        color: white;
-        background-color: rgba(0, 0, 0, 0.3);
-        transform: translate(-36px, -274px) !important;
-        text-align: center;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        line-height: 16px;
-        font-family: "Doto", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: 400;
-        font-style: normal;
-        font-variation-settings: "ROND" 0;
-        text-wrap: nowrap;
-        cursor: pointer;
-        transition: background-color 0.3s, opacity 0.3s;
-        &:hover {
-            background-color: rgba(124, 56, 188, 0.5);
-        }
-        &.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+    display: block;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    transform: translate(-36px, -274px) !important;
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "ROND" 0;
+    text-wrap: nowrap;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.5s;
+    &:hover {
+        background-color: rgba(124, 56, 188, 0.5);
+    }
+    &.hidden {
+        opacity: 0;
+        pointer-events: none;
     }
 }
