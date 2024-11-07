@@ -12,7 +12,7 @@ export default function Experience() {
         "book", "chair2", "curtain", "coffee", "window1", "window2",
         "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor",
         "desk", "keyboard", "mouse", "plant1", "plant2", "plant3",
-        "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3", "phone"
+        "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3"
     ];
 
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
@@ -58,7 +58,7 @@ export default function Experience() {
     const skyMaterial = useRef();
     const pointLightRef = useRef();
 
-    const { nodes } = useGLTF('./room21.glb', true, (loader) => {
+    const { nodes } = useGLTF('./room22.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
         loader.setDRACOLoader(dracoLoader);
@@ -99,10 +99,6 @@ export default function Experience() {
     const computerScreenPosition = nodes["computer_screen"]?.position;
     const computerScreenRotation = nodes["computer_screen"]?.rotation;
     const computerScreenScale = nodes["computer_screen"]?.scale;
-
-    const phoneScreenPosition = nodes["phone_screen"]?.position;
-    const phoneScreenRotation = nodes["phone_screen"]?.rotation;
-    const phoneScreenScale = nodes["phone_screen"]?.scale;
 
     return (
         <>
@@ -200,24 +196,6 @@ export default function Experience() {
                     scale-z={computerScreenScale.z}
                     distanceFactor={0.56}
                     wrapperClass="computer-screen"
-                >
-                    <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
-                </Html>
-
-                {/* Phone screen */}
-                <Html
-                    transform
-                    position-x={phoneScreenPosition.x + 0.035}
-                    position-y={phoneScreenPosition.y + 0.007}
-                    position-z={phoneScreenPosition.z - 0.008}
-                    rotation-x={phoneScreenRotation.x}
-                    rotation-y={phoneScreenRotation.y}
-                    rotation-z={phoneScreenRotation.z + 2.58}
-                    scale-x={phoneScreenScale.x}
-                    scale-y={phoneScreenScale.y}
-                    scale-z={phoneScreenScale.z}
-                    distanceFactor={0.11}
-                    wrapperClass="phone-screen"
                 >
                     <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
                 </Html>
