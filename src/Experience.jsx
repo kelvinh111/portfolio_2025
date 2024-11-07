@@ -89,11 +89,13 @@ export default function Experience() {
 
     // State to manage desk lamp light
     const [isHovered, setIsHovered] = useState(false);
+    const [islampLabelConfirmed, setIslampLabelConfirmed] = useState(false);
     const [isLightOff, setIsLightOff] = useState(true);
 
     // Click handler for the desk lamp
     const handleDeskLampClick = () => {
         setIsLightOff(prev => !prev);
+        setIslampLabelConfirmed(true);
     };
 
     const computerScreenPosition = nodes["computer_screen"]?.position;
@@ -174,10 +176,15 @@ export default function Experience() {
                             {isLamp && (
                                 <Html
                                     position={[0, 0, 0]} // Adjust the position to make sure it is above the lamp
-                                    distanceFactor={8} // Controls how the Html scales based on camera distance
+                                    distanceFactor={3} // Controls how the Html scales based on camera distance
                                     wrapperClass="desk-lamp-label"
                                 >
-                                    Turn on the light
+                                    <span
+                                        onClick={handleDeskLampClick}
+                                        className={`${islampLabelConfirmed ? 'hidden' : ''}`}
+                                    >
+                                        Turn on the light
+                                    </span>
                                 </Html>
                             )}
                         </mesh>
