@@ -1,11 +1,15 @@
 import * as THREE from 'three';
-import { useGLTF, useTexture, OrbitControls, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
-import { useFrame, extend } from '@react-three/fiber';
+import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
+import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useControls } from 'leva';
+import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
+
+CameraControls.install({ THREE }); // Install CameraControls for THREE.js
+extend({ CameraControls });
 
 export default function Experience() {
     const objects = [
@@ -48,6 +52,22 @@ export default function Experience() {
         planeSize: { value: [400, 260], step: 0.5 },
     });
 
+    const {
+        minAzimuthAngle,
+        maxAzimuthAngle,
+        minPolarAngle,
+        maxPolarAngle,
+        minDistance,
+        maxDistance
+    } = useControls('Camera Controls', {
+        minAzimuthAngle: { value: -Math.PI / 4, step: 0.01, min: -Math.PI, max: Math.PI },
+        maxAzimuthAngle: { value: Math.PI / 4, step: 0.01, min: -Math.PI, max: Math.PI },
+        minPolarAngle: { value: Math.PI / 3, step: 0.01, min: 0, max: Math.PI },
+        maxPolarAngle: { value: Math.PI / 2, step: 0.01, min: 0, max: Math.PI },
+        minDistance: { value: 5, step: 0.1, min: 1, max: 50 },
+        maxDistance: { value: 15, step: 0.1, min: 1, max: 50 }
+    });
+
     const windowNormalMap = useTexture("./window_normal.png");
     windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
 
@@ -56,7 +76,8 @@ export default function Experience() {
     const glassRefs = useRef([]);
     const planeRef = useRef();
     const skyMaterial = useRef();
-    const pointLightRef = useRef();
+    const cameraControlsRef = useRef();
+    const { camera, gl } = useThree();
 
     const { nodes } = useGLTF('./room22.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
@@ -71,6 +92,19 @@ export default function Experience() {
         objectsTextures[name] = texture;
     });
 
+    // Log the camera position and set it dynamically
+    useEffect(() => {
+        if (cameraControlsRef.current) {
+            cameraControlsRef.current.setLookAt(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z,
+                -3.2, 1.4, -3.5, // Target position
+                true // Smooth transition
+            );
+        }
+    }, [camera]);
+
     useFrame((state, delta) => {
         skyMaterial.current.uTime += delta;
 
@@ -83,6 +117,8 @@ export default function Experience() {
 
         planeRef.current.visible = false;
         glassRefs.current.forEach(ref => ref.visible = true);
+
+        cameraControlsRef.current?.update(delta);
     });
 
     const directionalLightRef = useRef();
@@ -104,7 +140,22 @@ export default function Experience() {
 
     return (
         <>
-            <OrbitControls makeDefault target={[-3.2, 1.4, -3.5]} />
+            <cameraControls
+                ref={cameraControlsRef}
+                args={[camera, gl.domElement]}
+                minAzimuthAngle={0.2} // Limit horizontal rotation
+                maxAzimuthAngle={0.28}
+                minPolarAngle={1.58} // Limit vertical rotation
+                maxPolarAngle={1.72}
+                minDistance={3.1} // Minimum zoom distance
+                maxDistance={3.1} // Maximum zoom distance
+                // minAzimuthAngle={minAzimuthAngle} // Use Leva-controlled values
+                // maxAzimuthAngle={maxAzimuthAngle}
+                // minPolarAngle={minPolarAngle}
+                // maxPolarAngle={maxPolarAngle}
+                // minDistance={minDistance}
+                // maxDistance={maxDistance}
+            />
             <group ref={sceneRef}>
                 {/* Sky */}
                 <mesh rotation={[0, 0, 0]} position={planePosition} ref={planeRef}>
@@ -128,7 +179,6 @@ export default function Experience() {
                             color={'#7461d3'}
                         />
                         <pointLight
-                            ref={pointLightRef}
                             position={[computerScreenPosition?.x + 0.4, computerScreenPosition?.y, computerScreenPosition?.z]}
                             intensity={0.3}
                             distance={1}
@@ -140,7 +190,7 @@ export default function Experience() {
 
                 {/* Objects */}
                 {objects.map((name) => {
-                    const isLamp = name === 'desk_lamp'
+                    const isLamp = name === 'desk_lamp';
                     let material;
 
                     if (isLamp && isDeskLampHovered) {
@@ -174,7 +224,7 @@ export default function Experience() {
                         >
                             {material}
                             {/* Desk Lamp light hint label */}
-                            {isLamp &&  (
+                            {isLamp && (
                                 <Html
                                     position={[0.2, 0, 1]}
                                     distanceFactor={3}
