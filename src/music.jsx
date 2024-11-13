@@ -78,7 +78,7 @@ class Music extends React.Component {
     return (
       <div className="music">
         <ReactHowler
-          src={['sound.ogg', 'sound.mp3']}
+          src={['romeo_n_juliet.mp3']}
           playing={this.state.playing}
           volume={volume}
           ref={(ref) => (this.player = ref)}
