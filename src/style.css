@@ -37,7 +37,7 @@ body,
     text-wrap: nowrap;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
-    &:hover {
+    &.active {
         background-color: rgba(124, 56, 188, 0.5);
     }
     &.hidden {

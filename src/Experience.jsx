@@ -8,9 +8,6 @@ import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
 
-CameraControls.install({ THREE }); // Install CameraControls for THREE.js
-extend({ CameraControls });
-
 export default function Experience() {
     const objects = [
         "book", "chair2", "curtain", "coffee", "window1", "window2",
@@ -21,7 +18,20 @@ export default function Experience() {
 
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
 
-    // Sky texture
+    // Camera
+    const cameraLimits = {
+        minAzimuthAngle: 0.2,
+        maxAzimuthAngle: 0.28,
+        minPolarAngle: 1.58,
+        maxPolarAngle: 1.72,
+        minDistance: 3.1,
+        maxDistance: 3.1,
+    };
+
+    CameraControls.install({ THREE });
+    extend({ CameraControls });
+
+    // Sky
     const skyTexture = useTexture('./sky.png');
     skyTexture.minFilter = THREE.NearestFilter;
     skyTexture.magFilter = THREE.NearestFilter;
@@ -52,7 +62,7 @@ export default function Experience() {
         planeSize: { value: [400, 260], step: 0.5 },
     });
 
-
+    // Windows
     const windowNormalMap = useTexture("./window_normal.png");
     windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
 
@@ -120,13 +130,14 @@ export default function Experience() {
         glassRefs.current.forEach(ref => ref.visible = true);
 
         targetPosition.current.x = THREE.MathUtils.lerp(
-            -0.2,
-            -0.28,
+            -cameraLimits.minAzimuthAngle,
+            -cameraLimits.maxAzimuthAngle,
             1 - mousePosition.current.x
         );
+
         targetPosition.current.y = THREE.MathUtils.lerp(
-            1.58,
-            1.72,
+            cameraLimits.minPolarAngle,
+            cameraLimits.maxPolarAngle,
             1 - mousePosition.current.y
         );
 
@@ -156,12 +167,12 @@ export default function Experience() {
             <cameraControls
                 ref={cameraControlsRef}
                 args={[camera, gl.domElement]}
-                minAzimuthAngle={0.2} // Limit horizontal rotation
-                maxAzimuthAngle={0.28}
-                minPolarAngle={1.58} // Limit vertical rotation
-                maxPolarAngle={1.72}
-                minDistance={3.1} // Minimum zoom distance
-                maxDistance={3.1} // Maximum zoom distance
+                minAzimuthAngle={cameraLimits.minAzimuthAngle} // Limit horizontal rotation
+                maxAzimuthAngle={cameraLimits.maxAzimuthAngle}
+                minPolarAngle={cameraLimits.minPolarAngle} // Limit vertical rotation
+                maxPolarAngle={cameraLimits.maxPolarAngle}
+                minDistance={cameraLimits.minDistance} // Minimum zoom distance
+                maxDistance={cameraLimits.maxDistance} // Maximum zoom distance
             />
             <group ref={sceneRef}>
                 {/* Sky */}
@@ -233,12 +244,14 @@ export default function Experience() {
                             {/* Desk Lamp light hint label */}
                             {isLamp && (
                                 <Html
-                                    position={[0.2, 0, 1]}
+                                    position={[0.15, 0, 1]}
                                     distanceFactor={3}
                                 >
                                     <span
                                         onClick={handleDeskLampClick}
-                                        className={`desk-lamp-label ${islampLabelConfirmed ? 'hidden' : ''}`}
+                                        onPointerOver={() => { setIsDeskLampHovered(true); }}
+                                        onPointerOut={() => { setIsDeskLampHovered(false); }}
+                                        className={`desk-lamp-label ${islampLabelConfirmed ? 'hidden' : ''} ${isDeskLampHovered ? 'active' : ''}`}
                                     >
                                         Turn on the light
                                     </span>
