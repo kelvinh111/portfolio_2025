@@ -130,9 +130,7 @@ export default function Experience() {
             1 - mousePosition.current.y
         );
 
-        cameraControlsRef.current.azimuthAngle = -targetPosition.current.x
-        cameraControlsRef.current.polarAngle = targetPosition.current.y
-
+        cameraControlsRef.current.rotateTo(-targetPosition.current.x, targetPosition.current.y, true)
         cameraControlsRef.current?.update(delta);
     });
 
