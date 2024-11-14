@@ -52,21 +52,6 @@ export default function Experience() {
         planeSize: { value: [400, 260], step: 0.5 },
     });
 
-    const {
-        minAzimuthAngle,
-        maxAzimuthAngle,
-        minPolarAngle,
-        maxPolarAngle,
-        minDistance,
-        maxDistance
-    } = useControls('Camera Controls', {
-        minAzimuthAngle: { value: -Math.PI / 4, step: 0.01, min: -Math.PI, max: Math.PI },
-        maxAzimuthAngle: { value: Math.PI / 4, step: 0.01, min: -Math.PI, max: Math.PI },
-        minPolarAngle: { value: Math.PI / 3, step: 0.01, min: 0, max: Math.PI },
-        maxPolarAngle: { value: Math.PI / 2, step: 0.01, min: 0, max: Math.PI },
-        minDistance: { value: 5, step: 0.1, min: 1, max: 50 },
-        maxDistance: { value: 15, step: 0.1, min: 1, max: 50 }
-    });
 
     const windowNormalMap = useTexture("./window_normal.png");
     windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
@@ -92,8 +77,13 @@ export default function Experience() {
         objectsTextures[name] = texture;
     });
 
+    // Mouse move camera controls
+    const mousePosition = useRef(new THREE.Vector2());
+    const targetPosition = useRef(new THREE.Vector2(0, 0));
+
     // Log the camera position and set it dynamically
     useEffect(() => {
+        camera.position.set(-2.4, 1.05, -0.6)
         if (cameraControlsRef.current) {
             cameraControlsRef.current.setLookAt(
                 camera.position.x,
@@ -104,6 +94,17 @@ export default function Experience() {
             );
         }
     }, [camera]);
+
+    useEffect(() => {
+        const handleMouseMove = (event) => {
+            // Normalize mouse position to range [0, 1]
+            mousePosition.current.x = event.clientX / window.innerWidth;
+            mousePosition.current.y = event.clientY / window.innerHeight;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
 
     useFrame((state, delta) => {
         skyMaterial.current.uTime += delta;
@@ -117,6 +118,20 @@ export default function Experience() {
 
         planeRef.current.visible = false;
         glassRefs.current.forEach(ref => ref.visible = true);
+
+        targetPosition.current.x = THREE.MathUtils.lerp(
+            -0.2,
+            -0.28,
+            1 - mousePosition.current.x
+        );
+        targetPosition.current.y = THREE.MathUtils.lerp(
+            1.58,
+            1.72,
+            1 - mousePosition.current.y
+        );
+
+        cameraControlsRef.current.azimuthAngle = -targetPosition.current.x
+        cameraControlsRef.current.polarAngle = targetPosition.current.y
 
         cameraControlsRef.current?.update(delta);
     });
@@ -149,12 +164,6 @@ export default function Experience() {
                 maxPolarAngle={1.72}
                 minDistance={3.1} // Minimum zoom distance
                 maxDistance={3.1} // Maximum zoom distance
-                // minAzimuthAngle={minAzimuthAngle} // Use Leva-controlled values
-                // maxAzimuthAngle={maxAzimuthAngle}
-                // minPolarAngle={minPolarAngle}
-                // maxPolarAngle={maxPolarAngle}
-                // minDistance={minDistance}
-                // maxDistance={maxDistance}
             />
             <group ref={sceneRef}>
                 {/* Sky */}
