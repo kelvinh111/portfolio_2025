@@ -8,7 +8,7 @@ class Music extends React.Component {
 
     this.state = {
       playing: true, // Always play by default
-      volume: 0.3,
+      volume: 0,
       previousVolume: 0.3, // Track the previous volume level for restoring
       isMuted: false
     };

@@ -274,7 +274,7 @@ export default function Experience() {
                     distanceFactor={0.56}
                     wrapperClass="computer-screen"
                 >
-                    <iframe src="https://www.webbyawards.com/" style={{ border: "none" }} />
+                    <iframe src="http://localhost:1234" style={{ border: "none" }} />
                 </Html>
 
                 {/* Windows */}
@@ -311,7 +311,7 @@ export default function Experience() {
                     scale={[3, 2, 1.6]}
                     position={[-2.4, 1.6, -2.2]}
                     speed={0.2}
-                    count={80}
+                    count={60}
                     color={"#ffffff"}
                     opacity={0.3}
                     renderOrder={0}

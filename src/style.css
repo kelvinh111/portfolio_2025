@@ -14,11 +14,6 @@ body,
     height: 300px;
 }
 
-.phone-screen iframe {
-    width: 315px;
-    height: 560px;
-}
-
 .desk-lamp-label {
     display: block;
     color: white;
@@ -38,7 +33,7 @@ body,
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
     &.active {
-        background-color: rgba(124, 56, 188, 0.5);
+        background-color: rgba(161, 94, 223, 0.5);
     }
     &.hidden {
         opacity: 0;
