@@ -29,8 +29,8 @@ body,
     text-align: center;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: min(1.8vw, 1.8vh); 
-    line-height: min(1.8vw, 1.8vh); 
+    font-size: min(1.5vw, 1.5vh); 
+    line-height: min(1.5vw, 1.5vh); 
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -70,6 +70,7 @@ body,
 
 .slider-container {
     position: relative;
+    top: -20px;
     height: 150px;
     width: 10px;
     padding-bottom: 30px;
@@ -108,6 +109,10 @@ body,
     font-size: 30px;
     color: rgba(255, 255, 255, 0.6);
     transition: color 0.3s;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-bottom: 0 !important;
     &:hover {
         color: rgba(255, 255, 255, 0.8);
     }

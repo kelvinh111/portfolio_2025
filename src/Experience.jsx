@@ -118,7 +118,6 @@ export default function Experience() {
 
     useEffect(() => {
         if (cameraControlsRef.current) {
-            // cameraControlsRef.current.mouseButtons.wheel = CameraControls.ACTION.NONE;
             // Disable mouse wheel zooming
             cameraControlsRef.current.mouseButtons.wheel = CameraControls.ACTION.NONE;
 
@@ -134,16 +133,41 @@ export default function Experience() {
         }
     }, []);
 
+    // useEffect(() => {
+    //     const handleMouseMove = (event) => {
+    //         // Normalize mouse position to range [0, 1]
+    //         mousePosition.current.x = event.clientX / window.innerWidth;
+    //         mousePosition.current.y = event.clientY / window.innerHeight;
+    //     };
+
+    //     window.addEventListener('mousemove', handleMouseMove);
+    //     return () => window.removeEventListener('mousemove', handleMouseMove);
+    // }, []);
     useEffect(() => {
         const handleMouseMove = (event) => {
-            // Normalize mouse position to range [0, 1]
-            mousePosition.current.x = event.clientX / window.innerWidth;
-            mousePosition.current.y = event.clientY / window.innerHeight;
+          // Normalize mouse position to range [0, 1]
+          mousePosition.current.x = event.clientX / window.innerWidth;
+          mousePosition.current.y = event.clientY / window.innerHeight;
         };
-
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+      
+        const handleTouchMove = (event) => {
+          event.preventDefault(); // Prevent default touch behavior like scrolling
+          if (event.touches.length > 0) {
+            const touch = event.touches[0];
+            mousePosition.current.x = touch.clientX / window.innerWidth;
+            mousePosition.current.y = touch.clientY / window.innerHeight;
+          }
+        };
+      
+        gl.domElement.addEventListener('mousemove', handleMouseMove);
+        gl.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+      
+        return () => {
+          gl.domElement.removeEventListener('mousemove', handleMouseMove);
+          gl.domElement.removeEventListener('touchmove', handleTouchMove);
+        };
+      }, [gl.domElement]);
+      
 
     const directionalLightRef = useRef();
 
@@ -353,7 +377,7 @@ export default function Experience() {
                         distanceFactor={0.34}
                         wrapperClass="computer-screen"
                     >
-                        <iframe src="http://localhost:1234" style={{ border: "none" }} />
+                        <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} />
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}
