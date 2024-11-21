@@ -3,7 +3,7 @@ import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Enviro
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
-import { useControls } from 'leva';
+import { useControls, button } from 'leva';
 import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
@@ -60,6 +60,16 @@ export default function Experience() {
         baseSkyColor: { value: '#151c5c' },
         planePosition: { value: [35, 65, -300], step: 0.1 },
         planeSize: { value: [400, 260], step: 0.5 },
+        logCameraPosition: button(() => {
+            if (cameraControlsRef.current) {
+                const cameraPosition = camera.position;
+                const targetPosition = cameraControlsRef.current.getTarget(new THREE.Vector3());
+                console.log('Camera Position:', cameraPosition);
+                console.log('Target Position:', targetPosition);
+            } else {
+                console.log('Camera Controls not initialized');
+            }
+        }),
     });
 
     // Windows
@@ -92,12 +102,9 @@ export default function Experience() {
     const targetPosition = useRef(new THREE.Vector2(0, 0));
 
     function resetCamera() {
-        camera.position.set(-2.4, 1.05, -0.6)
         if (cameraControlsRef.current) {
             cameraControlsRef.current.setLookAt(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z,
+                -2.4, 1.05, -0.6, // camera position
                 -3.2, 1.4, -3.5, // Target position
                 true // Smooth transition
             );
@@ -111,7 +118,19 @@ export default function Experience() {
 
     useEffect(() => {
         if (cameraControlsRef.current) {
+            // cameraControlsRef.current.mouseButtons.wheel = CameraControls.ACTION.NONE;
+            // Disable mouse wheel zooming
             cameraControlsRef.current.mouseButtons.wheel = CameraControls.ACTION.NONE;
+
+            // Disable mouse drag interactions
+            cameraControlsRef.current.mouseButtons.left = CameraControls.ACTION.NONE;
+            cameraControlsRef.current.mouseButtons.middle = CameraControls.ACTION.NONE;
+            cameraControlsRef.current.mouseButtons.right = CameraControls.ACTION.NONE;
+
+            // Optionally, disable touch interactions if needed
+            cameraControlsRef.current.touches.one = CameraControls.ACTION.NONE; // One finger touch
+            cameraControlsRef.current.touches.two = CameraControls.ACTION.NONE; // Two finger touch
+            cameraControlsRef.current.touches.three = CameraControls.ACTION.NONE; // Three finger touch
         }
     }, []);
 
@@ -148,6 +167,8 @@ export default function Experience() {
     // State to manage zoom
     const [isZoomedIn, setIsZoomedIn] = useState(false);
 
+    const originalLimits = { ...cameraLimits };
+
     // Function to handle zooming into the computer screen
     function handleZoomToComputerScreen() {
         const computerScreen = computerScreenRef.current;
@@ -155,60 +176,30 @@ export default function Experience() {
 
         // Toggle zoom state
         if (isZoomedIn) {
-            // Reset camera to initial position
-            // cameraControlsRef.current.reset(true);
-            resetCamera()
             setIsZoomedIn(false);
+            cameraControlsRef.current.minAzimuthAngle = originalLimits.minAzimuthAngle;
+            cameraControlsRef.current.maxAzimuthAngle = originalLimits.maxAzimuthAngle;
+            cameraControlsRef.current.minPolarAngle = originalLimits.minPolarAngle;
+            cameraControlsRef.current.maxPolarAngle = originalLimits.maxPolarAngle;
+            setTimeout(() => {
+                resetCamera()
+            })
         } else {
-            // Get the world position and orientation of the computer screen
-            const screenWorldPosition = new THREE.Vector3();
-            computerScreen.getWorldPosition(screenWorldPosition);
-
-            const screenWorldQuaternion = new THREE.Quaternion();
-            computerScreen.getWorldQuaternion(screenWorldQuaternion);
-
-            // Calculate the screen's normal vector (direction it's facing)
-            const screenNormal = new THREE.Vector3(0, 0, 1).applyQuaternion(screenWorldQuaternion);
-
-            // Get the size of the computer screen
-            const box = new THREE.Box3().setFromObject(computerScreen);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-            const screenHeight = size.y;
-            const screenWidth = size.x;
-
-            // Calculate the camera's field of view in radians
-            const fovY = (camera.fov * Math.PI) / 180;
-            const aspect = camera.aspect;
-            const fovX = 2 * Math.atan(Math.tan(fovY / 2) * aspect);
-
-            // Compute the distance needed to frame the screen without distortion
-            const distanceY = (screenHeight / 2) / Math.tan(fovY / 2) * 1.3;
-            const distanceX = (screenWidth / 2) / Math.tan(fovX / 2) * 1.3;
-            const distance = Math.max(distanceY, distanceX);
-
-            // Determine the new camera position
-            const cameraPosition = screenWorldPosition
-                .clone()
-                .add(screenNormal.multiplyScalar(distance));
-
-            // Adjust the camera's up vector
-            const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(screenWorldQuaternion);
-            camera.up.copy(screenUp);
-            camera.updateProjectionMatrix();
-
-            // Smoothly move the camera to the new position and look at the screen
-            cameraControlsRef.current.setLookAt(
-                cameraPosition.x,
-                cameraPosition.y,
-                cameraPosition.z,
-                screenWorldPosition.x,
-                screenWorldPosition.y - 0.1,
-                screenWorldPosition.z,
-                true // Enable smooth transition
-            );
-
             setIsZoomedIn(true);
+            cameraControlsRef.current.minAzimuthAngle = null;
+            cameraControlsRef.current.maxAzimuthAngle = null;
+            cameraControlsRef.current.minPolarAngle = null;
+            cameraControlsRef.current.maxPolarAngle = null;
+
+            setTimeout(() => {
+                if (cameraControlsRef.current) {
+                    cameraControlsRef.current.setLookAt(
+                        -2.8, 1.29, -2.334, // camera position
+                        -3.42, 1.19, -2.56, // Target position
+                        true
+                    );
+                }
+            })
         }
     }
 
@@ -354,10 +345,6 @@ export default function Experience() {
                 >
                     <Html
                         transform
-                        // position-x={computerScreenPosition.x + 0.017}
-                        // position-y={computerScreenPosition.y - 0.095}
-                        // position-z={computerScreenPosition.z}
-                        // rotation={computerScreenRotation}
                         position-x={0.01}
                         position-y={-0.095}
                         scale-x={computerScreenScale.x}
@@ -370,7 +357,7 @@ export default function Experience() {
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}
-                        position-y={isZoomedIn ? -0.33 : 0.23}
+                        position-y={isZoomedIn ? -0.34 : 0.23}
                         distanceFactor={2.5}
                     >
                         <span
