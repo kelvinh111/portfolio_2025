@@ -3,33 +3,48 @@ import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Enviro
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
-import { useControls, button } from 'leva';
+import { useControls, button, Leva } from 'leva';
 import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
 
 export default function Experience() {
+    const buffer = useFBO();
+    const sceneRef = useRef();
+    const glassRefs = useRef([]);
+    const planeRef = useRef();
+    const skyMaterial = useRef();
+    const cameraControlsRef = useRef();
+    const { camera, gl } = useThree();
+    const mousePosition = useRef(new THREE.Vector2());
+    const targetPosition = useRef(new THREE.Vector2(0, 0));
+
+    // Load the scene
+    const { nodes } = useGLTF('./room22.glb', true, (loader) => {
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('draco/');
+        loader.setDRACOLoader(dracoLoader);
+    });
+
+    // Scene objects
     const objects = [
         "book", "chair2", "curtain", "coffee", "window1", "window2",
         "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor",
         "desk", "keyboard", "mouse", "plant1", "plant2", "plant3",
         "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3"
     ];
+    const objectsTextures = {};
+    objects.forEach((name) => {
+        const texture = useTexture(`./${name}.jpg`);
+        texture.flipY = false;
+        objectsTextures[name] = texture;
+    });
 
+    // Windows glass effect
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
+    const windowNormalMap = useTexture("./window_normal.png");
+    windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
 
-    // Camera
-    const cameraLimits = {
-        minAzimuthAngle: 0.2,
-        maxAzimuthAngle: 0.28,
-        minPolarAngle: 1.58,
-        maxPolarAngle: 1.72,
-        minDistance: 3.1,
-        maxDistance: 3.1,
-    };
-
-    CameraControls.install({ THREE });
-    extend({ CameraControls });
 
     // Sky
     const skyTexture = useTexture('./sky.png');
@@ -72,34 +87,18 @@ export default function Experience() {
         }),
     });
 
-    // Windows
-    const windowNormalMap = useTexture("./window_normal.png");
-    windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
+    // Camera
+    CameraControls.install({ THREE });
+    extend({ CameraControls });
 
-    const buffer = useFBO();
-    const sceneRef = useRef();
-    const glassRefs = useRef([]);
-    const planeRef = useRef();
-    const skyMaterial = useRef();
-    const cameraControlsRef = useRef();
-    const { camera, gl } = useThree();
-
-    const { nodes } = useGLTF('./room22.glb', true, (loader) => {
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('draco/');
-        loader.setDRACOLoader(dracoLoader);
-    });
-
-    const objectsTextures = {};
-    objects.forEach((name) => {
-        const texture = useTexture(`./${name}.jpg`);
-        texture.flipY = false;
-        objectsTextures[name] = texture;
-    });
-
-    // Mouse move camera controls
-    const mousePosition = useRef(new THREE.Vector2());
-    const targetPosition = useRef(new THREE.Vector2(0, 0));
+    const cameraLimits = {
+        minAzimuthAngle: 0.2,
+        maxAzimuthAngle: 0.28,
+        minPolarAngle: 1.58,
+        maxPolarAngle: 1.72,
+        minDistance: 3.1,
+        maxDistance: 3.1,
+    };
 
     function resetCamera() {
         if (cameraControlsRef.current) {
@@ -111,7 +110,7 @@ export default function Experience() {
         }
     }
 
-    // Log the camera position and set it dynamically
+    // Set the initial camera position
     useEffect(() => {
         resetCamera()
     }, [camera]);
@@ -133,67 +132,57 @@ export default function Experience() {
         }
     }, []);
 
-    // useEffect(() => {
-    //     const handleMouseMove = (event) => {
-    //         // Normalize mouse position to range [0, 1]
-    //         mousePosition.current.x = event.clientX / window.innerWidth;
-    //         mousePosition.current.y = event.clientY / window.innerHeight;
-    //     };
-
-    //     window.addEventListener('mousemove', handleMouseMove);
-    //     return () => window.removeEventListener('mousemove', handleMouseMove);
-    // }, []);
+    // Mouse & touch
     useEffect(() => {
         const handleMouseMove = (event) => {
-          // Normalize mouse position to range [0, 1]
-          mousePosition.current.x = event.clientX / window.innerWidth;
-          mousePosition.current.y = event.clientY / window.innerHeight;
+            // Normalize mouse position to range [0, 1]
+            mousePosition.current.x = event.clientX / window.innerWidth;
+            mousePosition.current.y = event.clientY / window.innerHeight;
         };
-      
+
         const handleTouchMove = (event) => {
-          event.preventDefault(); // Prevent default touch behavior like scrolling
-          if (event.touches.length > 0) {
-            const touch = event.touches[0];
-            mousePosition.current.x = touch.clientX / window.innerWidth;
-            mousePosition.current.y = touch.clientY / window.innerHeight;
-          }
+            event.preventDefault(); // Prevent default touch behavior like scrolling
+            if (event.touches.length > 0) {
+                const touch = event.touches[0];
+                mousePosition.current.x = touch.clientX / window.innerWidth;
+                mousePosition.current.y = touch.clientY / window.innerHeight;
+            }
         };
-      
+
         gl.domElement.addEventListener('mousemove', handleMouseMove);
         gl.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
-      
-        return () => {
-          gl.domElement.removeEventListener('mousemove', handleMouseMove);
-          gl.domElement.removeEventListener('touchmove', handleTouchMove);
-        };
-      }, [gl.domElement]);
-      
 
+        return () => {
+            gl.domElement.removeEventListener('mousemove', handleMouseMove);
+            gl.domElement.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [gl.domElement]);
+
+
+    // Light
+
+    // Sky light from outside
     const directionalLightRef = useRef();
 
-    // State to manage desk lamp light
+    // Desk lamp light
     const [isDeskLampHovered, setIsDeskLampHovered] = useState(false);
     const [islampLabelConfirmed, setIslampLabelConfirmed] = useState(false);
     const [isLightOff, setIsLightOff] = useState(true);
 
-    // Click handler for the desk lamp
     const handleDeskLampClick = () => {
         setIsLightOff(prev => !prev);
         setIslampLabelConfirmed(true);
     };
 
+    // Computer screen
     const computerScreenPosition = nodes["computer_screen"]?.position;
     const computerScreenScale = nodes["computer_screen"]?.scale;
-
-    // Reference to the computer screen mesh
     const computerScreenRef = useRef();
 
-    // State to manage zoom
+    // Zoom
     const [isZoomedIn, setIsZoomedIn] = useState(false);
-
     const originalLimits = { ...cameraLimits };
 
-    // Function to handle zooming into the computer screen
     function handleZoomToComputerScreen() {
         const computerScreen = computerScreenRef.current;
         if (!computerScreen || !cameraControlsRef.current) return;
@@ -261,6 +250,7 @@ export default function Experience() {
 
     return (
         <>
+            <Leva hidden={true} />
             <cameraControls
                 ref={cameraControlsRef}
                 args={[camera, gl.domElement]}
@@ -392,9 +382,6 @@ export default function Experience() {
                         </span>
                     </Html>
                 </mesh>
-
-
-                {/* The Zoom Button */}
 
                 {/* Windows */}
                 {windows.map((name, index) => (
