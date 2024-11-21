@@ -91,8 +91,7 @@ export default function Experience() {
     const mousePosition = useRef(new THREE.Vector2());
     const targetPosition = useRef(new THREE.Vector2(0, 0));
 
-    // Log the camera position and set it dynamically
-    useEffect(() => {
+    function resetCamera() {
         camera.position.set(-2.4, 1.05, -0.6)
         if (cameraControlsRef.current) {
             cameraControlsRef.current.setLookAt(
@@ -103,6 +102,11 @@ export default function Experience() {
                 true // Smooth transition
             );
         }
+    }
+
+    // Log the camera position and set it dynamically
+    useEffect(() => {
+        resetCamera()
     }, [camera]);
 
     useEffect(() => {
@@ -115,35 +119,6 @@ export default function Experience() {
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
-
-    useFrame((state, delta) => {
-        skyMaterial.current.uTime += delta;
-
-        planeRef.current.visible = true;
-        glassRefs.current.forEach(ref => ref.visible = false);
-
-        state.gl.setRenderTarget(buffer);
-        state.gl.render(state.scene, state.camera);
-        state.gl.setRenderTarget(null);
-
-        planeRef.current.visible = false;
-        glassRefs.current.forEach(ref => ref.visible = true);
-
-        targetPosition.current.x = THREE.MathUtils.lerp(
-            -cameraLimits.minAzimuthAngle,
-            -cameraLimits.maxAzimuthAngle,
-            1 - mousePosition.current.x
-        );
-
-        targetPosition.current.y = THREE.MathUtils.lerp(
-            cameraLimits.minPolarAngle,
-            cameraLimits.maxPolarAngle,
-            1 - mousePosition.current.y
-        );
-
-        cameraControlsRef.current.rotateTo(-targetPosition.current.x, targetPosition.current.y, true)
-        cameraControlsRef.current?.update(delta);
-    });
 
     const directionalLightRef = useRef();
 
@@ -159,8 +134,109 @@ export default function Experience() {
     };
 
     const computerScreenPosition = nodes["computer_screen"]?.position;
-    const computerScreenRotation = nodes["computer_screen"]?.rotation;
     const computerScreenScale = nodes["computer_screen"]?.scale;
+
+    // Reference to the computer screen mesh
+    const computerScreenRef = useRef();
+
+    // State to manage zoom
+    const [isZoomedIn, setIsZoomedIn] = useState(false);
+
+    // Function to handle zooming into the computer screen
+    function handleZoomToComputerScreen() {
+        const computerScreen = computerScreenRef.current;
+        if (!computerScreen || !cameraControlsRef.current) return;
+
+        // Toggle zoom state
+        if (isZoomedIn) {
+            // Reset camera to initial position
+            // cameraControlsRef.current.reset(true);
+            resetCamera()
+            setIsZoomedIn(false);
+        } else {
+            // Get the world position and orientation of the computer screen
+            const screenWorldPosition = new THREE.Vector3();
+            computerScreen.getWorldPosition(screenWorldPosition);
+
+            const screenWorldQuaternion = new THREE.Quaternion();
+            computerScreen.getWorldQuaternion(screenWorldQuaternion);
+
+            // Calculate the screen's normal vector (direction it's facing)
+            const screenNormal = new THREE.Vector3(0, 0, 1).applyQuaternion(screenWorldQuaternion);
+
+            // Get the size of the computer screen
+            const box = new THREE.Box3().setFromObject(computerScreen);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const screenHeight = size.y;
+            const screenWidth = size.x;
+
+            // Calculate the camera's field of view in radians
+            const fovY = (camera.fov * Math.PI) / 180;
+            const aspect = camera.aspect;
+            const fovX = 2 * Math.atan(Math.tan(fovY / 2) * aspect);
+
+            // Compute the distance needed to frame the screen without distortion
+            const distanceY = (screenHeight / 2) / Math.tan(fovY / 2) * 1.3;
+            const distanceX = (screenWidth / 2) / Math.tan(fovX / 2) * 1.3;
+            const distance = Math.max(distanceY, distanceX);
+
+            // Determine the new camera position
+            const cameraPosition = screenWorldPosition
+                .clone()
+                .add(screenNormal.multiplyScalar(distance));
+
+            // Adjust the camera's up vector
+            const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(screenWorldQuaternion);
+            camera.up.copy(screenUp);
+            camera.updateProjectionMatrix();
+
+            // Smoothly move the camera to the new position and look at the screen
+            cameraControlsRef.current.setLookAt(
+                cameraPosition.x,
+                cameraPosition.y,
+                cameraPosition.z,
+                screenWorldPosition.x,
+                screenWorldPosition.y - 0.1,
+                screenWorldPosition.z,
+                true // Enable smooth transition
+            );
+
+            setIsZoomedIn(true);
+        }
+    }
+
+    useFrame((state, delta) => {
+        skyMaterial.current.uTime += delta;
+
+        planeRef.current.visible = true;
+        glassRefs.current.forEach(ref => ref.visible = false);
+
+        state.gl.setRenderTarget(buffer);
+        state.gl.render(state.scene, state.camera);
+        state.gl.setRenderTarget(null);
+
+        planeRef.current.visible = false;
+        glassRefs.current.forEach(ref => ref.visible = true);
+
+        if (!isZoomedIn) {
+            targetPosition.current.x = THREE.MathUtils.lerp(
+                -cameraLimits.minAzimuthAngle,
+                -cameraLimits.maxAzimuthAngle,
+                1 - mousePosition.current.x
+            );
+
+            targetPosition.current.y = THREE.MathUtils.lerp(
+                cameraLimits.minPolarAngle,
+                cameraLimits.maxPolarAngle,
+                1 - mousePosition.current.y
+            );
+
+            cameraControlsRef.current.rotateTo(-targetPosition.current.x, targetPosition.current.y, true);
+        }
+
+        cameraControlsRef.current?.update(delta);
+    });
 
     return (
         <>
@@ -251,7 +327,7 @@ export default function Experience() {
                                         onClick={handleDeskLampClick}
                                         onPointerOver={() => { setIsDeskLampHovered(true); }}
                                         onPointerOut={() => { setIsDeskLampHovered(false); }}
-                                        className={`desk-lamp-label ${islampLabelConfirmed ? 'hidden' : ''} ${isDeskLampHovered ? 'active' : ''}`}
+                                        className={`label desk-lamp-label ${islampLabelConfirmed ? 'hidden' : ''} ${isDeskLampHovered ? 'active' : ''}`}
                                     >
                                         Turn on the light
                                     </span>
@@ -261,21 +337,47 @@ export default function Experience() {
                     );
                 })}
 
-                {/* Computer screen */}
-                <Html
-                    transform
-                    position-x={computerScreenPosition.x + 0.017}
-                    position-y={computerScreenPosition.y - 0.095}
-                    position-z={computerScreenPosition.z}
-                    rotation={computerScreenRotation}
-                    scale-x={computerScreenScale.x}
-                    scale-y={computerScreenScale.y - 0.1}
-                    scale-z={computerScreenScale.z}
-                    distanceFactor={0.56}
-                    wrapperClass="computer-screen"
+                {/* Computer screen with iframe and zoom button */}
+                <mesh
+                    ref={computerScreenRef}
+                    geometry={nodes["computer_screen"]?.geometry}
+                    position={nodes["computer_screen"]?.position}
+                    rotation={nodes["computer_screen"]?.rotation}
+                    scale={nodes["computer_screen"]?.scale}
+                    visible={false}
                 >
-                    <iframe src="http://localhost:1234" style={{ border: "none" }} />
-                </Html>
+                    <Html
+                        transform
+                        // position-x={computerScreenPosition.x + 0.017}
+                        // position-y={computerScreenPosition.y - 0.095}
+                        // position-z={computerScreenPosition.z}
+                        // rotation={computerScreenRotation}
+                        position-x={0.01}
+                        position-y={-0.095}
+                        scale-x={computerScreenScale.x}
+                        scale-y={computerScreenScale.y}
+                        scale-z={computerScreenScale.z}
+                        distanceFactor={0.34}
+                        wrapperClass="computer-screen"
+                    >
+                        <iframe src="http://localhost:1234" style={{ border: "none" }} />
+                    </Html>
+                    <Html
+                        position-x={-0.05}
+                        position-y={0.23}
+                        distanceFactor={3}
+                    >
+                        <span
+                            onClick={handleZoomToComputerScreen}
+                            className="label zoom-button"
+                        >
+                            {isZoomedIn ? 'Reset View' : 'Zoom In'}
+                        </span>
+                    </Html>
+                </mesh>
+
+
+                {/* The Zoom Button */}
 
                 {/* Windows */}
                 {windows.map((name, index) => (

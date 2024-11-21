@@ -10,11 +10,11 @@ body,
 }
 
 .computer-screen iframe {
-    width: 600px;
-    height: 300px;
+    width: 1000px;
+    height: 450px;
 }
 
-.desk-lamp-label {
+.label {
     display: block;
     color: white;
     background-color: rgba(0, 0, 0, 0.3);
@@ -32,7 +32,7 @@ body,
     text-wrap: nowrap;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
-    &.active {
+    &.active, &:hover {
         background-color: rgba(161, 94, 223, 0.5);
     }
     &.hidden {
