@@ -110,6 +110,12 @@ export default function Experience() {
     }, [camera]);
 
     useEffect(() => {
+        if (cameraControlsRef.current) {
+            cameraControlsRef.current.mouseButtons.wheel = CameraControls.ACTION.NONE;
+        }
+    }, []);
+
+    useEffect(() => {
         const handleMouseMove = (event) => {
             // Normalize mouse position to range [0, 1]
             mousePosition.current.x = event.clientX / window.innerWidth;
@@ -363,15 +369,15 @@ export default function Experience() {
                         <iframe src="http://localhost:1234" style={{ border: "none" }} />
                     </Html>
                     <Html
-                        position-x={-0.05}
-                        position-y={0.23}
-                        distanceFactor={3}
+                        position-x={isZoomedIn ? 0 : -0.05}
+                        position-y={isZoomedIn ? -0.33 : 0.23}
+                        distanceFactor={2.5}
                     >
                         <span
                             onClick={handleZoomToComputerScreen}
-                            className="label zoom-button"
+                            className="label"
                         >
-                            {isZoomedIn ? 'Reset View' : 'Zoom In'}
+                            {isZoomedIn ? 'Go back' : 'View my page'}
                         </span>
                     </Html>
                 </mesh>
