@@ -68,9 +68,9 @@ export default function Experience() {
     extend({ SkyMaterial });
 
     const { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
-        sunColor: { value: '#d65e8b' },
+        sunColor: { value: '#ff5c98' },
         lightColor: { value: '#ffffff' },
-        darkColor: { value: '#1e1e7c' },
+        darkColor: { value: '#424296' },
         baseSkyColor: { value: '#151c5c' },
         planePosition: { value: [35, 65, -300], step: 0.1 },
         planeSize: { value: [400, 260], step: 0.5 },
