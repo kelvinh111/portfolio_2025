@@ -3,7 +3,7 @@ import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Enviro
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
-import { useControls, button } from 'leva';
+import { useControls, button, Leva } from 'leva';
 import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
@@ -67,24 +67,40 @@ export default function Experience() {
 
     extend({ SkyMaterial });
 
-    const { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
-        sunColor: { value: '#ff5c98' },
-        lightColor: { value: '#ffffff' },
-        darkColor: { value: '#424296' },
-        baseSkyColor: { value: '#151c5c' },
-        planePosition: { value: [35, 65, -300], step: 0.1 },
-        planeSize: { value: [400, 260], step: 0.5 },
-        logCameraPosition: button(() => {
-            if (cameraControlsRef.current) {
-                const cameraPosition = camera.position;
-                const targetPosition = cameraControlsRef.current.getTarget(new THREE.Vector3());
-                console.log('Camera Position:', cameraPosition);
-                console.log('Target Position:', targetPosition);
-            } else {
-                console.log('Camera Controls not initialized');
-            }
-        }),
-    });
+    const sunColorO = '#ff5c98';
+    const lightColorO = '#ffffff';
+    const darkColorO = '#424296';
+    const baseSkyColorO = '#151c5c';
+    const planePositionO = [35, 65, -300]
+    const planeSizeO = [400, 260]
+
+    if (window.location.search.includes('?debug')) {
+        var { sunColor, lightColor, darkColor, baseSkyColor, planePosition, planeSize } = useControls({
+            sunColor: { value: sunColorO },
+            lightColor: { value: lightColorO },
+            darkColor: { value: darkColorO },
+            baseSkyColor: { value: baseSkyColorO },
+            planePosition: { value: planePositionO, step: 0.1 },
+            planeSize: { value: planeSizeO, step: 0.5 },
+            logCameraPosition: button(() => {
+                if (cameraControlsRef.current) {
+                    const cameraPosition = camera.position;
+                    const targetPosition = cameraControlsRef.current.getTarget(new THREE.Vector3());
+                    console.log('Camera Position:', cameraPosition);
+                    console.log('Target Position:', targetPosition);
+                } else {
+                    console.log('Camera Controls not initialized');
+                }
+            }),
+        });
+    } else {
+        var sunColor = sunColorO;
+        var lightColor = lightColorO;
+        var darkColor = darkColorO
+        var baseSkyColor = baseSkyColorO
+        var planePosition = planePositionO
+        var planeSize = planeSizeO
+    }
 
     // Camera
     CameraControls.install({ THREE });
@@ -133,6 +149,8 @@ export default function Experience() {
 
     // Mouse & touch
     useEffect(() => {
+        gl.domElement.style.touchAction = 'none';
+
         const handleMouseMove = (event) => {
             // Normalize mouse position to range [0, 1]
             mousePosition.current.x = event.clientX / window.innerWidth;
@@ -140,7 +158,7 @@ export default function Experience() {
         };
 
         const handleTouchMove = (event) => {
-            event.preventDefault(); // Prevent default touch behavior like scrolling
+            // event.preventDefault(); // Prevent default touch behavior like scrolling
             if (event.touches.length > 0) {
                 const touch = event.touches[0];
                 mousePosition.current.x = touch.clientX / window.innerWidth;
@@ -149,7 +167,7 @@ export default function Experience() {
         };
 
         gl.domElement.addEventListener('mousemove', handleMouseMove);
-        gl.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+        gl.domElement.addEventListener('touchmove', handleTouchMove, { passive: true });
 
         return () => {
             gl.domElement.removeEventListener('mousemove', handleMouseMove);
@@ -259,6 +277,7 @@ export default function Experience() {
                 minDistance={cameraLimits.minDistance} // Minimum zoom distance
                 maxDistance={cameraLimits.maxDistance} // Maximum zoom distance
             />
+
             <group ref={sceneRef}>
                 {/* Sky */}
                 <mesh rotation={[0, 0, 0]} position={planePosition} ref={planeRef}>

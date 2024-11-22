@@ -16,6 +16,10 @@ body,
     background: #000;
 }
 
+canvas {
+    touch-action: none;
+}
+
 .computer-screen iframe {
     width: 1000px;
     height: 450px;
