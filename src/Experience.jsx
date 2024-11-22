@@ -3,7 +3,7 @@ import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Enviro
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
-import { useControls, button, Leva } from 'leva';
+import { useControls, button } from 'leva';
 import CameraControls from 'camera-controls';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
@@ -20,7 +20,7 @@ export default function Experience() {
     const targetPosition = useRef(new THREE.Vector2(0, 0));
 
     // Load the scene
-    const { nodes } = useGLTF('./room22.glb', true, (loader) => {
+    const { nodes } = useGLTF('./scene.glb', true, (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
         loader.setDRACOLoader(dracoLoader);
@@ -44,7 +44,6 @@ export default function Experience() {
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
     const windowNormalMap = useTexture("./window_normal.png");
     windowNormalMap.wrapS = windowNormalMap.wrapT = 1000;
-
 
     // Sky
     const skyTexture = useTexture('./sky.png');
@@ -250,7 +249,6 @@ export default function Experience() {
 
     return (
         <>
-            <Leva hidden={true} />
             <cameraControls
                 ref={cameraControlsRef}
                 args={[camera, gl.domElement]}
@@ -409,7 +407,7 @@ export default function Experience() {
                 ))}
 
                 {/* Environment background */}
-                <Environment files="./env.jpg" />
+                <Environment files="./env.hdr" />
 
                 {/* Sparkles */}
                 <Sparkles
