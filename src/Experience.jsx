@@ -305,7 +305,7 @@ export default function Experience() {
                             intensity={0.3}
                             distance={1}
                             decay={2}
-                            color={"#ffffff"}
+                            color={"#cb79ff"}
                         />
                     </>
                 )}
