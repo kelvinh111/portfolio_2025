@@ -384,7 +384,8 @@ export default function Experience() {
                         distanceFactor={0.34}
                         wrapperClass="computer-screen"
                     >
-                        <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} />
+                        {/* <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} /> */}
+                        <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} />
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}

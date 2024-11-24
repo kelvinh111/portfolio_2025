@@ -8,6 +8,10 @@ const root = ReactDOM.createRoot(document.querySelector('#root'))
 
 root.render(
     <>
+        <div className="orientation-overlay">
+            <p>Please rotate your device to landscape to view this page.</p>
+        </div>
+
         <Canvas
             flat
             camera={ {

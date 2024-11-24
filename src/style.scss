@@ -16,6 +16,38 @@ body,
     background: #000;
 }
 
+.orientation-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999999;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Show overlay in portrait mode */
+@media only screen and (orientation: portrait) {
+    .orientation-overlay {
+        display: flex;
+    }
+}
+
+/* Hide overlay in landscape mode */
+@media only screen and (orientation: landscape) {
+    .orientation-overlay {
+        display: none;
+    }
+}
+
 canvas {
     touch-action: none;
 }
@@ -33,8 +65,8 @@ canvas {
     text-align: center;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: min(1.5vw, 1.5vh); 
-    line-height: min(1.5vw, 1.5vh); 
+    font-size: min(1.5vw, 1.5vh);
+    line-height: min(1.5vw, 1.5vh);
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -44,7 +76,8 @@ canvas {
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
     -webkit-user-select: none;
-    &.active, &:hover {
+    &.active,
+    &:hover {
         background-color: rgba(161, 94, 223, 0.5);
     }
     &.hidden {
