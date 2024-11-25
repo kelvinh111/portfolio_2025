@@ -2,7 +2,10 @@
     box-sizing: border-box;
 }
 
-html,
+html {
+    font-size: 16px; // Base font size
+}
+
 body,
 #root {
     overflow: hidden;
@@ -23,7 +26,7 @@ body,
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.8);
     color: white;
     display: flex;
     align-items: center;
@@ -31,7 +34,8 @@ body,
     z-index: 99999999;
     flex-direction: column;
     text-align: center;
-    padding: 20px;
+    padding: 1.25rem; // 20px / 16 = 1.25rem
+    font: 1.2rem/2.4rem "Rubik", sans-serif;
 }
 
 /* Show overlay in portrait mode */
@@ -57,25 +61,28 @@ canvas {
     height: 450px;
 }
 
+/* Label Styling */
 .label {
     display: block;
     color: white;
     background-color: rgba(0, 0, 0, 0.3);
     transform: translate(-50%, -50%);
     text-align: center;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: min(1.5vw, 1.5vh);
-    line-height: min(1.5vw, 1.5vh);
+    padding: 0.15rem 0.4rem; // 4px 10px
+    border-radius: 0.25rem; // 6px
+    font-size: min(1.5vw, 1.5vh, 1rem); // Fallback to 1rem
+    line-height: min(1.5vw, 1.5vh, 1rem);
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
     font-variation-settings: "ROND" 0;
-    text-wrap: nowrap;
+    white-space: nowrap; // Replaced 'text-wrap: nowrap;' with 'white-space: nowrap;'
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
     -webkit-user-select: none;
+    user-select: none;
+
     &.active,
     &:hover {
         background-color: rgba(161, 94, 223, 0.5);
@@ -86,14 +93,16 @@ canvas {
     }
 }
 
+/* Music Controls */
 .music {
     position: fixed;
     z-index: 999;
-    bottom: 30px;
-    right: 30px;
+    bottom: 1.875rem; // 30px
+    right: 1.875rem; // 30px
     display: flex;
     flex-direction: column;
     align-items: center;
+
     &:hover .slider-container {
         opacity: 1;
     }
@@ -107,50 +116,72 @@ canvas {
 
 .slider-container {
     position: relative;
-    top: -20px;
-    height: 150px;
-    width: 10px;
-    padding-bottom: 30px;
+    top: -1.25rem; // -20px
+    height: 9.375rem; // 150px
+    width: 0.625rem; // 10px
+    padding-bottom: 1.875rem; // 30px
     opacity: 0;
     transition: opacity 0.3s;
 }
 
 .vertical-slider {
     -webkit-appearance: none;
-    width: 150px;
-    height: 1px;
+    width: 9.375rem; // 150px
+    height: 0.0625rem; // 1px
     background: rgba(255, 255, 255, 0.5);
     outline: none;
     transform: rotate(-90deg);
-    transform-origin: 75px 75px;
-}
+    transform-origin: 4.6875rem 4.6875rem; // 75px 75px
 
-.vertical-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    border-radius: 50%;
-}
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 0.75rem; // 12px
+        height: 0.75rem; // 12px
+        background: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        border-radius: 50%;
+    }
 
-.vertical-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
+    &::-moz-range-thumb {
+        width: 1.25rem; // 20px
+        height: 1.25rem; // 20px
+        background: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+    }
 }
 
 .speaker-icon {
-    font-size: 30px;
+    font-size: 1.875rem; // 30px
     color: rgba(255, 255, 255, 0.6);
     transition: color 0.3s;
     display: inline-block;
-    width: 30px;
-    height: 30px;
+    width: 1.875rem; // 30px
+    height: 1.875rem; // 30px
     margin-bottom: 0 !important;
+
     &:hover {
         color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px; // Adjust base font size for smaller screens
+    }
+
+    // .computer-screen iframe {
+    //     width: 90vw; // Make iframe take 90% of viewport width on small screens
+    //     height: auto;
+    // }
+
+    .label {
+        font-size: min(
+            3vw,
+            3vh,
+            0.875rem
+        ); // Adjust font size for smaller screens
+        line-height: min(3vw, 3vh, 0.875rem);
     }
 }

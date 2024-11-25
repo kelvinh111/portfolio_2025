@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Suspense  } from 'react';
 import { useControls, button, Leva } from 'leva';
 import CameraControls from 'camera-controls';
+import { isMobile } from 'react-device-detect'; 
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
 
@@ -384,8 +385,8 @@ export default function Experience() {
                         distanceFactor={0.34}
                         wrapperClass="computer-screen"
                     >
-                        {/* <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} /> */}
-                        <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} />
+                        <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} />
+                        {/* <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} /> */}
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}
@@ -431,13 +432,13 @@ export default function Experience() {
 
                 {/* Sparkles */}
                 <Sparkles
-                    size={1.2}
+                    size={ isMobile ? 0.4 : 1.2 }
                     scale={[3, 2, 1.6]}
                     position={[-2.4, 1.6, -2.2]}
                     speed={0.2}
                     count={60}
-                    color={"#ffffff"}
-                    opacity={0.3}
+                    color={"#ffeeaa"}
+                    opacity={ isMobile ? 0.2 : 0.3 }
                     renderOrder={0}
                 />
             </group>
