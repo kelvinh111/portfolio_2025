@@ -1,9 +1,17 @@
 // LoadingScreen.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Html, useProgress } from '@react-three/drei';
 
 const LoadingScreen = () => {
     const { active, progress, errors, item, loaded, total } = useProgress();
+    const [realProgress, setRealProgress] = useState(0);
+
+    useEffect(() => {
+        if (progress > realProgress) {
+            setRealProgress(progress);
+            console.log('Real Progress Updated:', progress);
+        }
+    }, [progress, realProgress]);
 
     return (
         <Html center>
@@ -27,13 +35,13 @@ const LoadingScreen = () => {
                     overflow: 'hidden',
                 }}>
                     <div style={{
-                        width: `${progress}%`,
+                        width: `${realProgress}%`,
                         height: '100%',
                         background: '#29d',
                         transition: 'width 0.3s ease',
                     }}></div>
                 </div>
-                <p style={{ marginTop: '10px' }}>{progress.toFixed(0)}%</p>
+                <p style={{ marginTop: '10px' }}>{realProgress.toFixed(0)}%</p>
             </div>
         </Html>
     );

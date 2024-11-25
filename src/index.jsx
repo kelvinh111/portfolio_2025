@@ -14,7 +14,7 @@ import ReactDOM from 'react-dom/client'
 import { Canvas } from '@react-three/fiber'
 import Experience from './Experience.jsx'
 import LoadingScreen from './LoadingScreen'; // The loading screen you just created
-import Music from './music.jsx'
+import Music from './Music.jsx'
 
 const root = ReactDOM.createRoot(document.querySelector('#root'))
 
