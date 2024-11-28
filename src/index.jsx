@@ -26,7 +26,7 @@ const handleFadeComplete = () => {
 };
 
 return (
-  <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+  <div style={{ position: 'relative', width: '100dvw', height: '100dvh' }}>
     {/* Orientation Overlay */}
     <div className="orientation-overlay">
       <p>Please rotate your device to landscape<br />to have the best experience.</p>
