@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 // The amount of assets is 36
 let count = 0
 let realProgress = 0
+let isLoaded = false
 
 const LoadingScreen = ({ onFadeComplete }) => {
   // useProgress will trigger refresh of this component
@@ -15,6 +16,9 @@ const LoadingScreen = ({ onFadeComplete }) => {
   realProgress = Math.ceil((100 / 36) * count)
   if (realProgress > 95) {
     realProgress = 100
+    setTimeout(() => {
+      isLoaded = true
+    }, 2500)
   }
 
   return (
@@ -24,10 +28,8 @@ const LoadingScreen = ({ onFadeComplete }) => {
       animate={{ opacity: realProgress < 100 ? 1 : 0 }}
       transition={{ duration: 1, delay: 1.5 }}
       onAnimationComplete={() => {
-        if (realProgress >= 100) {
-          setTimeout(() => {
-            onFadeComplete()
-          }, 2500) // duration 1 + dely 1.5
+        if (isLoaded) {
+          onFadeComplete()
         }
       }}
     >
