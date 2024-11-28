@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { useRef, useState, useEffect, Suspense  } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useControls, button, Leva } from 'leva';
 import CameraControls from 'camera-controls';
-import { isMobile } from 'react-device-detect'; 
+import { isMobile } from 'react-device-detect';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
 
@@ -28,18 +28,29 @@ export default function Experience() {
     });
 
     // Scene objects
-    const objects = [
-        "book", "chair2", "curtain", "coffee", "window1", "window2",
-        "computer", "desk_lamp", "ceiling", "wall1", "wall2", "floor",
-        "desk", "keyboard", "mouse", "plant1", "plant2", "plant3",
-        "floor_lamp", "curtain_stick", "poster1", "poster2", "poster3"
+    const textureNames = [
+        'book', 'chair2', 'curtain', 'coffee', 'window1', 'window2',
+        'computer', 'desk_lamp', 'ceiling', 'wall1', 'wall2', 'floor',
+        'desk', 'keyboard', 'mouse', 'plant1', 'plant2', 'plant3',
+        'floor_lamp', 'curtain_stick', 'poster1', 'poster2', 'poster3',
     ];
-    const objectsTextures = {};
-    objects.forEach((name) => {
-        const texture = useTexture(`./${name}.jpg`);
+
+    const texturePaths = textureNames.map((name) => `./${name}.jpg`);
+
+    // Call useTexture once with an array of paths
+    const textures = useTexture(texturePaths);
+
+    // Set flipY property for all textures
+    textures.forEach((texture) => {
         texture.flipY = false;
-        objectsTextures[name] = texture;
     });
+
+    // Map textures to object names
+    const objectsTextures = {};
+    textureNames.forEach((name, index) => {
+        objectsTextures[name] = textures[index];
+    });
+
 
     // Windows glass effect
     const windows = ['window1glass1', 'window1glass2', 'window2glass1', 'window2glass2'];
@@ -312,7 +323,7 @@ export default function Experience() {
                 )}
 
                 {/* Objects */}
-                {objects.map((name) => {
+                {textureNames.map((name) => {
                     const isLamp = name === 'desk_lamp';
                     let material;
 
@@ -432,13 +443,13 @@ export default function Experience() {
 
                 {/* Sparkles */}
                 <Sparkles
-                    size={ isMobile ? 0.4 : 1.2 }
+                    size={isMobile ? 0.4 : 1.2}
                     scale={[3, 2, 1.6]}
                     position={[-2.4, 1.6, -2.2]}
                     speed={0.2}
                     count={60}
                     color={"#ffeeaa"}
-                    opacity={ isMobile ? 0.2 : 0.3 }
+                    opacity={isMobile ? 0.2 : 0.3}
                     renderOrder={0}
                 />
             </group>

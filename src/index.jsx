@@ -1,44 +1,66 @@
+// index.jsx
 if (process.env.NODE_ENV !== 'development') {
-    console.warn = () => {
-        return;
-    };
+  console.warn = () => {
+      return;
+  };
 
-    console.error = () => {
-        return;
-    };
+  console.error = () => {
+      return;
+  };
 }
 
-import './style.scss'
-import { Suspense } from 'react';
-import ReactDOM from 'react-dom/client'
-import { Canvas } from '@react-three/fiber'
-import Experience from './Experience.jsx'
+import './style.scss';
+import { Suspense, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import { Canvas } from '@react-three/fiber';
+import { AnimatePresence } from 'framer-motion';
+import Experience from './Experience.jsx';
 import LoadingScreen from './LoadingScreen'; // The loading screen you just created
-import Music from './Music.jsx'
+import Music from './Music.jsx';
 
-const root = ReactDOM.createRoot(document.querySelector('#root'))
+const App = () => {
+const [isLoaded, setIsLoaded] = useState(false);
 
-root.render(
-    <>
-        <div className="orientation-overlay">
-            <p>Please rotate your device to landscape<br />to have the best experience.</p>
-        </div>
+const handleFadeComplete = () => {
+  setIsLoaded(true);
+};
 
-        <Canvas
-            flat
-            camera={{
-                fov: 45,
-                near: 0.1,
-                far: 1000,
-                position: [-2.4, 1.05, -0.6]
-            }}
-        >
-            <color args={['#000000']} attach="background" />
-            <Suspense fallback={null}>
-                <Experience />
-            </Suspense>
-            <LoadingScreen />
-        </Canvas>
-        <Music />
-    </>
-)
+return (
+  <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    {/* Orientation Overlay */}
+    <div className="orientation-overlay">
+      <p>Please rotate your device to landscape<br />to have the best experience.</p>
+    </div>
+
+    {/* Three.js Canvas */}
+    <Canvas
+      flat
+      camera={{
+        fov: 45,
+        near: 0.1,
+        far: 1000,
+        position: [-2.4, 1.05, -0.6]
+      }}
+    >
+      <color args={['#000000']} attach="background" />
+      <Suspense fallback={null}>
+        <Experience />
+      </Suspense>
+    </Canvas>
+
+    {/* Music Component */}
+    <Music />
+
+    {/* Loading Screen with Fade-Out Transition */}
+    <AnimatePresence>
+      {!isLoaded && (
+        <LoadingScreen onFadeComplete={handleFadeComplete} />
+      )}
+    </AnimatePresence>
+  </div>
+);
+};
+
+const root = ReactDOM.createRoot(document.querySelector('#root'));
+
+root.render(<App />);

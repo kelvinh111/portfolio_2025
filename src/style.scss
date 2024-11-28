@@ -36,7 +36,7 @@ body,
     flex-direction: column;
     text-align: center;
     padding: 1.25rem; // 20px / 16 = 1.25rem
-    font: 1.2rem/2.4rem "Andika", sans-serif;
+    font: 1.2rem/2.4rem "M PLUS 1p", sans-serif;
 }
 
 /* Show overlay in portrait mode */
@@ -55,6 +55,50 @@ body,
 
 canvas {
     touch-action: none;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 88888888;
+    font: 1.5rem/3rem "M PLUS 1p", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+
+    .loading-welcome {
+        margin-bottom: 30px;
+    }
+
+    .loading-bar {
+        width: 500px;
+        height: 3px;
+        overflow: hidden;
+        background: #222;
+    }
+
+    .loading-progress-wrap {
+        height: 100%;
+        overflow: hidden;
+        margin-bottom: 30px;
+        transition: width 0.3s ease;
+    }
+
+    .loading-progress {
+        background: linear-gradient(-90deg, #4158d0, #c850c0, #ffcc70);
+        height: 100%;
+        width: 500px;
+    }
+
+    .loading-percent {
+        font-size: 1.2rem;
+    }
 }
 
 .computer-screen iframe {
@@ -171,11 +215,6 @@ canvas {
     html {
         font-size: 14px; // Adjust base font size for smaller screens
     }
-
-    // .computer-screen iframe {
-    //     width: 90vw; // Make iframe take 90% of viewport width on small screens
-    //     height: auto;
-    // }
 
     .label {
         font-size: min(

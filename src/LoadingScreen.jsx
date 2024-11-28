@@ -1,50 +1,47 @@
 // LoadingScreen.jsx
 import React, { useEffect, useState } from 'react';
-import { Html, useProgress } from '@react-three/drei';
+import { useProgress } from '@react-three/drei';
+import { motion } from 'framer-motion';
 
-const LoadingScreen = () => {
-    const { active, progress, errors, item, loaded, total } = useProgress();
-    const [realProgress, setRealProgress] = useState(0);
+// The amount of assets is 36
+let count = 0
+let realProgress = 0
 
-    useEffect(() => {
-        if (progress > realProgress) {
-            setRealProgress(progress);
-            console.log('Real Progress Updated:', progress);
+const LoadingScreen = ({ onFadeComplete }) => {
+  // useProgress will trigger refresh of this component
+  const { progress } = useProgress();
+
+  count++
+  realProgress = Math.ceil((100 / 36) * count)
+  if (realProgress > 95) {
+    realProgress = 100
+  }
+
+  return (
+    <motion.div
+      className="loading"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: realProgress < 100 ? 1 : 0 }}
+      transition={{ duration: 1, delay: 1.5 }}
+      onAnimationComplete={() => {
+        if (realProgress >= 100) {
+          setTimeout(() => {
+            onFadeComplete()
+          }, 2500) // duration 1 + dely 1.5
         }
-    }, [progress, realProgress]);
-
-    return (
-        <Html center>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(0, 0, 0, 0.8)',
-                padding: '20px 40px',
-                borderRadius: '10px',
-                color: 'white',
-            }}>
-                <p style={{ margin: 0, fontSize: '1.5em' }}>Loading...</p>
-                <div style={{
-                    width: '300px',
-                    height: '10px',
-                    background: '#555',
-                    borderRadius: '5px',
-                    marginTop: '20px',
-                    overflow: 'hidden',
-                }}>
-                    <div style={{
-                        width: `${realProgress}%`,
-                        height: '100%',
-                        background: '#29d',
-                        transition: 'width 0.3s ease',
-                    }}></div>
-                </div>
-                <p style={{ marginTop: '10px' }}>{realProgress.toFixed(0)}%</p>
-            </div>
-        </Html>
-    );
+      }}
+    >
+      <p className={'loading-welcome'}>Welcome.<br />I'm Kelvin, a web dev based in the UK.</p>
+      <div className='loading-bar'>
+        <div
+          className='loading-progress-wrap'
+          style={{ width: realProgress + '%' }}
+        >
+          <div className='loading-progress'></div>
+        </div>
+      </div>
+    </motion.div>
+  );
 };
 
 export default LoadingScreen;

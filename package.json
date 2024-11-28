@@ -21,6 +21,7 @@
     "@react-three/postprocessing": "^2.16.3",
     "camera-controls": "^2.9.0",
     "classnames": "^2.5.1",
+    "framer-motion": "^11.12.0",
     "leva": "^0.9.34",
     "r3f-perf": "^7.2.1",
     "raf": "^3.4.1",
