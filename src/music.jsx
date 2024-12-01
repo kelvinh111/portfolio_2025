@@ -14,8 +14,8 @@ class Music extends React.Component {
 
     this.state = {
       playing: true,
-      volume: 0, // Set a default volume
-      previousVolume: 0,
+      volume: 0.2, // Set a default volume
+      previousVolume: 0.2,
       isMuted: false,
       showSlider: false, // Control slider visibility on mobile
       isTouchDevice: false, // Detect touch devices
@@ -102,7 +102,7 @@ class Music extends React.Component {
     return (
       <div className="music">
         <ReactHowler
-          src={['romeo_n_juliet.mp3']}
+          src={['pantomime-253689.mp3']}
           playing={this.state.playing}
           volume={volume}
           ref={(ref) => (this.player = ref)}

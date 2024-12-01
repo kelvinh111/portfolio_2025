@@ -19,7 +19,7 @@ const App = () => {
       {/* Orientation Overlay */}
       {isLoaded && (
         <div className="orientation-overlay">
-          <p>Please rotate your device to landscape<br />to have the best experience.</p>
+          <p>Please rotate your device to landscape<br />for the best experience.</p>
         </div>
       )}
 
