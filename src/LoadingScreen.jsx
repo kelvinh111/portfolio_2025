@@ -1,5 +1,5 @@
 // LoadingScreen.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useProgress } from '@react-three/drei';
 import { motion } from 'framer-motion';
 

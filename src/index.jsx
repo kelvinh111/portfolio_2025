@@ -1,14 +1,3 @@
-// index.jsx
-if (process.env.NODE_ENV !== 'development') {
-  console.warn = () => {
-    return;
-  };
-
-  console.error = () => {
-    return;
-  };
-}
-
 import './style.scss';
 import { Suspense, useState } from 'react';
 import ReactDOM from 'react-dom/client';

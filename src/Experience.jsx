@@ -3,7 +3,7 @@ import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Enviro
 import { useFrame, extend, useThree } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
-import { useControls, button, Leva } from 'leva';
+import { useControls, button } from 'leva';
 import CameraControls from 'camera-controls';
 import { isMobile } from 'react-device-detect';
 import skyVertexShader from './shaders/sky/vertex.glsl';
