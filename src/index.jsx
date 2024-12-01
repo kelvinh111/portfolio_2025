@@ -1,11 +1,11 @@
 // index.jsx
 if (process.env.NODE_ENV !== 'development') {
   console.warn = () => {
-      return;
+    return;
   };
 
   console.error = () => {
-      return;
+    return;
   };
 }
 
@@ -19,46 +19,48 @@ import LoadingScreen from './LoadingScreen'; // The loading screen you just crea
 import Music from './Music.jsx';
 
 const App = () => {
-const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-const handleFadeComplete = () => {
-  setIsLoaded(true);
-};
+  const handleFadeComplete = () => {
+    setIsLoaded(true);
+  };
 
-return (
-  <div style={{ position: 'relative', width: '100dvw', height: '100dvh' }}>
-    {/* Orientation Overlay */}
-    <div className="orientation-overlay">
-      <p>Please rotate your device to landscape<br />to have the best experience.</p>
-    </div>
-
-    {/* Three.js Canvas */}
-    <Canvas
-      flat
-      camera={{
-        fov: 45,
-        near: 0.1,
-        far: 1000,
-        position: [-2.4, 1.05, -0.6]
-      }}
-    >
-      <color args={['#000000']} attach="background" />
-      <Suspense fallback={null}>
-        <Experience />
-      </Suspense>
-    </Canvas>
-
-    {/* Music Component */}
-    <Music />
-
-    {/* Loading Screen with Fade-Out Transition */}
-    <AnimatePresence>
-      {!isLoaded && (
-        <LoadingScreen onFadeComplete={handleFadeComplete} />
+  return (
+    <div style={{ position: 'relative', width: '100dvw', height: '100dvh' }}>
+      {/* Orientation Overlay */}
+      {isLoaded && (
+        <div className="orientation-overlay">
+          <p>Please rotate your device to landscape<br />to have the best experience.</p>
+        </div>
       )}
-    </AnimatePresence>
-  </div>
-);
+
+      {/* Three.js Canvas */}
+      <Canvas
+        flat
+        camera={{
+          fov: 45,
+          near: 0.1,
+          far: 1000,
+          position: [-2.4, 1.05, -0.6]
+        }}
+      >
+        <color args={['#000000']} attach="background" />
+        <Suspense fallback={null}>
+          <Experience />
+        </Suspense>
+      </Canvas>
+
+      {/* Music Component */}
+      <Music />
+
+      {/* Loading Screen */}
+      <AnimatePresence>
+        {!isLoaded && (
+          <LoadingScreen onFadeComplete={handleFadeComplete} />
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 const root = ReactDOM.createRoot(document.querySelector('#root'));

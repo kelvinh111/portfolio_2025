@@ -144,67 +144,98 @@ canvas {
 .music {
     position: fixed;
     z-index: 999;
-    bottom: 1.875rem; // 30px
-    right: 1.875rem; // 30px
+    bottom: 1.875rem;
+    right: 1.875rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    &:hover .slider-container {
-        opacity: 1;
-    }
 }
 
 .volume {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .slider-container {
-    position: relative;
-    top: -1.25rem; // -20px
-    height: 9.375rem; // 150px
-    width: 0.625rem; // 10px
-    padding-bottom: 1.875rem; // 30px
+    position: absolute;
+    bottom: 3.75rem; /* Position it above the speaker icon */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     opacity: 0;
-    transition: opacity 0.3s;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    width: 30px;
+    height: 150px;
 }
 
-.vertical-slider {
-    -webkit-appearance: none;
-    width: 9.375rem; // 150px
-    height: 0.0625rem; // 1px
-    background: rgba(255, 255, 255, 0.5);
-    outline: none;
-    transform: rotate(-90deg);
-    transform-origin: 4.6875rem 4.6875rem; // 75px 75px
+/* Show slider when hovering over .volume on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+    .volume:hover .slider-container {
+        opacity: 1;
+        visibility: visible;
+    }
+}
 
-    &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 0.75rem; // 12px
-        height: 0.75rem; // 12px
-        background: rgba(255, 255, 255, 0.8);
+/* Show slider when .show-slider class is present */
+.volume.show-slider .slider-container {
+    opacity: 1;
+    visibility: visible;
+}
+
+.rc-slider-vertical {
+    height: 150px;
+    .rc-slider-handle {
         cursor: pointer;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        margin-left: -6px;
+        margin-bottom: -7px;
+        position: relative; /* Added for pseudo-element positioning */
+
+        /* Increase touch area on mobile devices */
+        @media (hover: none) and (pointer: coarse) {
+            &::before {
+                content: "";
+                position: absolute;
+                top: -15px; /* Adjust to expand touch area above */
+                left: -15px; /* Adjust to expand touch area to the left */
+                width: 44px; /* Standard touch target size */
+                height: 44px; /* Standard touch target size */
+                background: transparent;
+            }
+        }
     }
 
-    &::-moz-range-thumb {
-        width: 1.25rem; // 20px
-        height: 1.25rem; // 20px
-        background: rgba(255, 255, 255, 0.8);
-        cursor: pointer;
+    .rc-slider-track {
+        width: 2px !important;
+        background-color: rgba(255, 255, 255, 0.7) !important;
+        border-radius: 3px;
+    }
+
+    .rc-slider-rail {
+        width: 2px !important;
+        background-color: rgba(255, 255, 255, 0.5) !important;
+        border-radius: 3px;
+    }
+    
+    .rc-slider-step {
+        width: 2px !important;
     }
 }
 
 .speaker-icon {
-    font-size: 1.875rem; // 30px
+    font-size: 30px;
     color: rgba(255, 255, 255, 0.6);
     transition: color 0.3s;
     display: inline-block;
-    width: 1.875rem; // 30px
-    height: 1.875rem; // 30px
+    width: 30px;
+    height: 30px;
     margin-bottom: 0 !important;
 
     &:hover {
