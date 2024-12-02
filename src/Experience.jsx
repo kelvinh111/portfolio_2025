@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { useGLTF, useTexture, Sparkles, MeshTransmissionMaterial, useFBO, Environment, shaderMaterial, Html } from '@react-three/drei';
-import { useFrame, extend, useThree } from '@react-three/fiber';
+import { useFrame, extend, useThree, useLoader } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { useRef, useState, useEffect } from 'react';
 import { useControls, button } from 'leva';
@@ -8,6 +8,9 @@ import CameraControls from 'camera-controls';
 import { isMobile } from 'react-device-detect';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
+import { EffectComposer } from '@react-three/postprocessing';
+import { TextureLoader } from 'three';
+import { GradientMapEffect } from './GradientMapEffect';
 
 export default function Experience() {
     const buffer = useFBO();
@@ -277,6 +280,11 @@ export default function Experience() {
         cameraControlsRef.current?.update(delta);
     });
 
+    const gradientMap = useLoader(TextureLoader, './gradient_map.png');
+    gradientMap.minFilter = THREE.LinearFilter;
+    gradientMap.magFilter = THREE.LinearFilter;
+    gradientMap.wrapS = gradientMap.wrapT = THREE.ClampToEdgeWrapping;
+
     return (
         <>
             <cameraControls
@@ -289,6 +297,10 @@ export default function Experience() {
                 minDistance={cameraLimits.minDistance} // Minimum zoom distance
                 maxDistance={cameraLimits.maxDistance} // Maximum zoom distance
             />
+
+            <EffectComposer>
+                <GradientMapEffect gradientMap={gradientMap} opacity={0.7} />
+            </EffectComposer>
 
             <group ref={sceneRef}>
                 {/* Sky */}
