@@ -14,8 +14,8 @@ class Music extends React.Component {
 
     this.state = {
       playing: true,
-      volume: 0.2, // Set a default volume
-      previousVolume: 0.2,
+      volume: 0.0, // Set a default volume
+      previousVolume: 0.0,
       isMuted: false,
       showSlider: false, // Control slider visibility on mobile
       isTouchDevice: false, // Detect touch devices

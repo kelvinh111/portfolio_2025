@@ -8,9 +8,6 @@ import CameraControls from 'camera-controls';
 import { isMobile } from 'react-device-detect';
 import skyVertexShader from './shaders/sky/vertex.glsl';
 import skyFragmentShader from './shaders/sky/fragment.glsl';
-import { EffectComposer } from '@react-three/postprocessing';
-import { TextureLoader } from 'three';
-import { GradientMapEffect } from './GradientMapEffect';
 
 export default function Experience() {
     const buffer = useFBO();
@@ -280,11 +277,6 @@ export default function Experience() {
         cameraControlsRef.current?.update(delta);
     });
 
-    const gradientMap = useLoader(TextureLoader, './gradient_map.png');
-    gradientMap.minFilter = THREE.LinearFilter;
-    gradientMap.magFilter = THREE.LinearFilter;
-    gradientMap.wrapS = gradientMap.wrapT = THREE.ClampToEdgeWrapping;
-
     return (
         <>
             <cameraControls
@@ -297,10 +289,6 @@ export default function Experience() {
                 minDistance={cameraLimits.minDistance} // Minimum zoom distance
                 maxDistance={cameraLimits.maxDistance} // Maximum zoom distance
             />
-
-            <EffectComposer>
-                <GradientMapEffect gradientMap={gradientMap} opacity={0.7} />
-            </EffectComposer>
 
             <group ref={sceneRef}>
                 {/* Sky */}
@@ -344,7 +332,7 @@ export default function Experience() {
                     } else if (isLightOff) {
                         material = <meshPhongMaterial map={objectsTextures[name]} />;
                     } else {
-                        material = <meshBasicMaterial map={objectsTextures[name]} />;
+                        material = <meshBasicMaterial color="#cccbff" map={objectsTextures[name]} />;
                     }
 
                     return (
@@ -408,8 +396,8 @@ export default function Experience() {
                         distanceFactor={0.34}
                         wrapperClass="computer-screen"
                     >
-                        {/* <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} /> */}
-                        <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} />
+                        <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} />
+                        {/* <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} /> */}
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}
