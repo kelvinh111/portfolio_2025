@@ -1,5 +1,5 @@
-precision highp float; // High precision for floats
-precision highp int;   // High precision for integers
+precision highp float;
+precision highp int;
 
 varying vec2 vUv;
 

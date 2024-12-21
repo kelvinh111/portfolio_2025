@@ -3,7 +3,7 @@
 }
 
 html {
-    font-size: 16px; // Base font size
+    font-size: 16px;
     background: #000;
 }
 
@@ -36,7 +36,7 @@ body,
     z-index: 77777777;
     flex-direction: column;
     text-align: center;
-    padding: 1.25rem; // 20px / 16 = 1.25rem
+    padding: 1.25rem;
     font: 1.2rem/2.4rem "Edu AU VIC WA NT Hand", serif;
 }
 
@@ -108,23 +108,22 @@ canvas {
     height: 450px;
 }
 
-/* Label Styling */
 .label {
     display: block;
     color: white;
     background-color: rgba(0, 0, 0, 0.3);
     transform: translate(-50%, -50%);
     text-align: center;
-    padding: 0.15rem 0.4rem; // 4px 10px
-    border-radius: 0.25rem; // 6px
-    font-size: min(1.0vw, 1.0vh, 1rem); // Fallback to 1rem
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: min(1.0vw, 1.0vh, 1rem);
     line-height: min(1.0vw, 1.0vh, 1rem);
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
     font-variation-settings: "ROND" 0;
-    white-space: nowrap; // Replaced 'text-wrap: nowrap;' with 'white-space: nowrap;'
+    white-space: nowrap;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.5s;
     -webkit-user-select: none;
@@ -160,7 +159,7 @@ canvas {
 
 .slider-container {
     position: absolute;
-    bottom: 3.75rem; /* Position it above the speaker icon */
+    bottom: 3.75rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -196,17 +195,17 @@ canvas {
         border: 2px solid rgba(255, 255, 255, 0.8);
         margin-left: -6px;
         margin-bottom: -7px;
-        position: relative; /* Added for pseudo-element positioning */
+        position: relative;
 
         /* Increase touch area on mobile devices */
         @media (hover: none) and (pointer: coarse) {
             &::before {
                 content: "";
                 position: absolute;
-                top: -15px; /* Adjust to expand touch area above */
-                left: -15px; /* Adjust to expand touch area to the left */
-                width: 44px; /* Standard touch target size */
-                height: 44px; /* Standard touch target size */
+                top: -15px;
+                left: -15px;
+                width: 44px;
+                height: 44px;
                 background: transparent;
             }
         }
@@ -243,7 +242,7 @@ canvas {
     }
 }
 
-/* Responsive Adjustments */
+/* Responsive */
 @media (max-width: 768px) {
     html {
         font-size: 14px; // Adjust base font size for smaller screens
@@ -254,7 +253,7 @@ canvas {
             3vw,
             3vh,
             0.875rem
-        ); // Adjust font size for smaller screens
+        );
         line-height: min(3vw, 3vh, 0.875rem);
     }
 }

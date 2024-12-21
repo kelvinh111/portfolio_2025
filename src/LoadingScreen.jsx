@@ -1,4 +1,3 @@
-// LoadingScreen.jsx
 import React from 'react';
 import { useProgress } from '@react-three/drei';
 import { motion } from 'framer-motion';
@@ -9,7 +8,7 @@ let realProgress = 0
 let isLoaded = false
 
 const LoadingScreen = ({ onFadeComplete }) => {
-  // useProgress will trigger refresh of this component
+  // Required, as useProgress will trigger refresh of this component
   const { progress } = useProgress();
 
   count++

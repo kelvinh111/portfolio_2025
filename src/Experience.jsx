@@ -36,11 +36,8 @@ export default function Experience() {
     ];
 
     const texturePaths = textureNames.map((name) => `./${name}.jpg`);
-
-    // Call useTexture once with an array of paths
     const textures = useTexture(texturePaths);
 
-    // Set flipY property for all textures
     textures.forEach((texture) => {
         texture.flipY = false;
     });
@@ -152,14 +149,13 @@ export default function Experience() {
             cameraControlsRef.current.mouseButtons.middle = CameraControls.ACTION.NONE;
             cameraControlsRef.current.mouseButtons.right = CameraControls.ACTION.NONE;
 
-            // Optionally, disable touch interactions if needed
+            // Disable touch interactions
             cameraControlsRef.current.touches.one = CameraControls.ACTION.NONE; // One finger touch
             cameraControlsRef.current.touches.two = CameraControls.ACTION.NONE; // Two finger touch
             cameraControlsRef.current.touches.three = CameraControls.ACTION.NONE; // Three finger touch
         }
     }, []);
 
-    // Mouse & touch
     useEffect(() => {
         gl.domElement.style.touchAction = 'none';
 
@@ -170,7 +166,6 @@ export default function Experience() {
         };
 
         const handleTouchMove = (event) => {
-            // event.preventDefault(); // Prevent default touch behavior like scrolling
             if (event.touches.length > 0) {
                 const touch = event.touches[0];
                 mousePosition.current.x = touch.clientX / window.innerWidth;
@@ -396,8 +391,8 @@ export default function Experience() {
                         distanceFactor={0.34}
                         wrapperClass="computer-screen"
                     >
-                        <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} />
-                        {/* <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} /> */}
+                        {/* <iframe src="http://192.168.0.13:1234" style={{ border: "none" }} /> */}
+                        <iframe src="https://static.kelvinhung.uk/" style={{ border: "none" }} />
                     </Html>
                     <Html
                         position-x={isZoomedIn ? 0 : -0.05}

@@ -14,11 +14,11 @@ class Music extends React.Component {
 
     this.state = {
       playing: true,
-      volume: 0.2, // Set a default volume
+      volume: 0.2, // Default volume
       previousVolume: 0.2,
       isMuted: false,
-      showSlider: false, // Control slider visibility on mobile
-      isTouchDevice: false, // Detect touch devices
+      showSlider: false,
+      isTouchDevice: false,
     };
 
     this.handleVolumeChange = this.handleVolumeChange.bind(this);
@@ -26,7 +26,6 @@ class Music extends React.Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.detectTouchDevice = this.detectTouchDevice.bind(this);
 
-    // Create a ref to the volume control element
     this.volumeRef = React.createRef();
   }
 

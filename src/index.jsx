@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { Canvas } from '@react-three/fiber';
 import { AnimatePresence } from 'framer-motion';
 import Experience from './Experience.jsx';
-import LoadingScreen from './LoadingScreen'; // The loading screen you just created
+import LoadingScreen from './LoadingScreen';
 import Music from './Music.jsx';
 
 const App = () => {
